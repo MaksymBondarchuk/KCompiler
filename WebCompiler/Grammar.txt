@@ -1,0 +1,21 @@
+﻿<програма>              ::= program <operators list> endprogram
+<operators list>        ::= <operator>¶ | <operator>¶<operators list> | <empty>
+<operator>              ::= <loop operator> | <conditional operator> | <input operator> | <output operator> | <declaration operator>
+<loop operator>         ::= do while (<logical expression>) <operators list> enddo
+<conditional operator>  ::= if <logical expression> then <operators list> fi
+<input operator>        ::= read : <identifier> :
+<output operator>       ::= write : <identifier> :
+<declaration operator>  ::= var <identifier> set <decimal> | var <identifier> set <identifier>```<set operator>          ::= <identifier> set <arithmetic expression> | <identifier> set <identifier>
+<logical expression>    ::= <arithmetic expression> equals <arithmetic expression>
+<arithmetic expression> ::= <arithmetic leaf> 
+                                | (<arithmetic expression>)
+                                | <arithmetic expression> <operation> <arithmetic expression>
+<arithmetic leaf>       ::= <decimal> | <identifier>
+<operation>             ::= + | - | * | /
+<decimal>               ::= <sign> <unsigned> | <sign><unsigned>.<unsigned>
+<unsigned>              ::= <number> | <number> <unsigned>
+<sign>                  ::= + | - | <empty>
+<number>                ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<identifier>            ::= @ <word>
+<word>                  ::= <letter> | <number> | <letter> <word> | <number> <word>
+<letter>                ::= a-z
