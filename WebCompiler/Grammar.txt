@@ -1,11 +1,13 @@
-﻿<програма>              ::= program <operators list> endprogram
+﻿<програма>              ::= program <program name> <operators list> endprogram
+<program name>			::= <identifier>
 <operators list>        ::= <operator>¶ | <operator>¶<operators list> | <empty>
 <operator>              ::= <loop operator> | <conditional operator> | <input operator> | <output operator> | <declaration operator>
 <loop operator>         ::= do while (<logical expression>) <operators list> enddo
 <conditional operator>  ::= if <logical expression> then <operators list> fi
 <input operator>        ::= read : <identifier> :
 <output operator>       ::= write : <identifier> :
-<declaration operator>  ::= var <identifier> set <decimal> | var <identifier> set <identifier>```<set operator>          ::= <identifier> set <arithmetic expression> | <identifier> set <identifier>
+<declaration operator>  ::= var <identifier> set <decimal> | var <identifier> set <identifier>
+<set operator>          ::= <identifier> set <arithmetic expression> | <identifier> set <identifier>
 <logical expression>    ::= <arithmetic expression> equals <arithmetic expression>
 <arithmetic expression> ::= <arithmetic leaf> 
                                 | (<arithmetic expression>)
