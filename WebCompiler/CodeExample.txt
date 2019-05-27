@@ -1,0 +1,15 @@
+program @Main
+var @first set 1
+var @second set -23.5
+var @third
+if (@third equals @second)
+then
+read(@third)
+write(@second)
+fi
+var @sum set 0
+do while (@first lessthn 100)
+@sum set @sum + @first
+@first set @first + 1
+enddo
+endprogram
