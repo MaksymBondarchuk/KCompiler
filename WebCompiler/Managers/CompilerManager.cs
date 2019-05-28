@@ -3,24 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using WebCompiler.Models;
 
 namespace WebCompiler.Managers
 {
     public class CompilerManager : ICompilerManager
     {
-        public CompilerManager()
-        {
-
-        }
-
-        public OuterLexemes LexicalAnalizer(string text)
+        public OuterLexemes LexicalAnalyzer(string text)
         {
             return Parse(text);
         }
 
-        public SyntaxResult SyntaxAnalizer(OuterLexemes lexemes)
+        public SyntaxResult SyntaxAnalyzer(OuterLexemes lexemes)
         {
             var res = SyntaxParse(lexemes);
             return new SyntaxResult
@@ -954,13 +948,12 @@ namespace WebCompiler.Managers
             return true;
         }
 
-
-
-
         #endregion
 
+        #region Polish
+
+        
+
+        #endregion
     }
-
-
-
 }

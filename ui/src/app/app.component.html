@@ -46,7 +46,7 @@
       <td mat-cell *matCellDef="let element"> {{element.line}} </td>
     </ng-container>
 
-    
+
 
     <!-- Weight Column -->
     <ng-container matColumnDef="text">
@@ -74,11 +74,11 @@
       <td mat-cell *matCellDef="let element"> {{element.token}} </td>
     </ng-container>
 
-    
+
 
     <!-- Weight Column -->
     <ng-container matColumnDef="token">
-      <th mat-header-cell *matHeaderCellDef> Lexeme examle </th>
+      <th mat-header-cell *matHeaderCellDef> Lexeme example </th>
       <td mat-cell *matCellDef="let element"> {{PrintToken(element.lexemes.join(', '))}} </td>
     </ng-container>
 
@@ -94,7 +94,7 @@
         <mat-card-title>Output Lexemes (from code)</mat-card-title>
       </mat-card-header>
   <mat-card-content>
- 
+
     <table mat-table [dataSource]="dataSourceLexems" class="mat-elevation-z8" style = "width: 100%">
 
       <ng-container matColumnDef="lineNumber">
@@ -132,7 +132,7 @@
         <mat-card-title>Identifiers</mat-card-title>
       </mat-card-header>
   <mat-card-content>
- 
+
     <table mat-table [dataSource]="dataSourceId" class="mat-elevation-z8" style = "width: 100%">
 
       <ng-container matColumnDef="name">
@@ -164,7 +164,7 @@
         <mat-card-title>Constants</mat-card-title>
       </mat-card-header>
   <mat-card-content>
- 
+
     <table mat-table [dataSource]="dataSourceCon" class="mat-elevation-z8" style = "width: 100%">
 
       <ng-container matColumnDef="name">
@@ -172,7 +172,7 @@
         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
       </ng-container>
 
-      
+
 
       <!-- Weight Column -->
       <ng-container matColumnDef="index">
@@ -192,7 +192,7 @@
         <mat-card-title>Lexical Errors </mat-card-title>
       </mat-card-header>
   <mat-card-content>
- 
+
     <table mat-table [dataSource]="dataSourceErr" class="mat-elevation-z8" style = "width: 100%">
 
       <ng-container matColumnDef="line">
@@ -200,7 +200,7 @@
         <td mat-cell *matCellDef="let element"> {{element.line}} </td>
       </ng-container>
 
-      
+
 
       <!-- Weight Column -->
       <ng-container matColumnDef="text">

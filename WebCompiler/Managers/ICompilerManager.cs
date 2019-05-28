@@ -8,8 +8,8 @@ namespace WebCompiler.Managers
 {
     public interface ICompilerManager
     {
-        OuterLexemes LexicalAnalizer(string text);
-        SyntaxResult SyntaxAnalizer(OuterLexemes lexemes);
+        OuterLexemes LexicalAnalyzer(string text);
+        SyntaxResult SyntaxAnalyzer(OuterLexemes lexemes);
 
     }
 }
