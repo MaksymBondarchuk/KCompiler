@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebCompiler.Models
 {
-    public class LexemInCode
+    public class LexemeInCode
     {
         public int LineNumber { get; set; }
         public string SubString { get; set; }

@@ -7,10 +7,11 @@ namespace WebCompiler.Models
         public OuterLexemes OuterLexemes { get; set; }
         public SyntaxResult SyntaxResult { get; set; }
     }
+    
     public class OuterLexemes
     {
         public List<LT> Grammar { get; set; }
-        public List<LexemInCode> Lexemes { get; set; }
+        public List<LexemeInCode> Lexemes { get; set; }
         public List<Constant> Constants { get; set; }
         public List<Identifier> Identifiers { get; set; }
         public List<LexicalError> Errors { get; set; }
@@ -20,6 +21,5 @@ namespace WebCompiler.Models
     {
         public string Token { get; set; }
         public string[] Lexemes { get; set; }
-
     }
 }

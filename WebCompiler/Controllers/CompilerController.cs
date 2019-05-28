@@ -26,9 +26,9 @@ namespace WebCompiler.Controllers
         {
             if (dto != null && !string.IsNullOrEmpty(dto.Text))
             {
-                var add = dto.Text.LastOrDefault().Equals("\n") ? " " : "\n";
-                var lex = _manager.LexicalAnalyzer(dto.Text + add);
-                var syn = _manager.SyntaxAnalyzer(lex);
+                string add = dto.Text.LastOrDefault().Equals("\n") ? " " : "\n";
+                OuterLexemes lex = _manager.LexicalAnalyzer(dto.Text + add);
+                SyntaxResult syn = _manager.SyntaxAnalyzer(lex);
                 return new Result
                     {
                         OuterLexemes = lex,
