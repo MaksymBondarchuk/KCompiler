@@ -110,7 +110,7 @@ namespace WebCompiler.Managers
             {
                 Identifiers = Identifiers,
                 Constants = Constants,
-                Lexems = Lexemes,
+                Lexemes = Lexemes,
                 Errors = Errors,
                 Grammar = GrammarLexemes
             };
@@ -349,7 +349,7 @@ namespace WebCompiler.Managers
                 });
                 return SyntaxErr;
             }
-            ParseProgram(lexemes.Lexems, ref i);
+            ParseProgram(lexemes.Lexemes, ref i);
 
 
             return SyntaxErr;

@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
 		{
 			return "¶";
 		}
-		else 
+		else
 		{
 			return token;
 		}
@@ -57,7 +57,7 @@ export class AppComponent implements OnInit {
 		{
 			return "¶";
 		}
-		else 
+		else
 		{
 			return token;
 		}
@@ -103,7 +103,7 @@ export class AppComponent implements OnInit {
 		this.compileService.postString(this.codetext).subscribe((data: Result) => {
 			this.outerLexemes = data.outerLexemes;
 			if (data !== null && data.outerLexemes != null) {
-				this.dataSourceLexems.data = data.outerLexemes.lexems;
+				this.dataSourceLexems.data = data.outerLexemes.lexemes;
 				this.dataSourceId.data = data.outerLexemes.identifiers;
 				this.dataSourceCon.data = data.outerLexemes.constants;
 				this.dataSourceErr.data = data.outerLexemes.errors;
@@ -126,7 +126,7 @@ export class AppComponent implements OnInit {
 		this.compileService.postString(atob(this.form.value.file.value)).subscribe((data: Result) => {
 			this.outerLexemes = data.outerLexemes;
 			if (data !== null && data.outerLexemes != null) {
-				this.dataSourceLexems.data = data.outerLexemes.lexems;
+				this.dataSourceLexems.data = data.outerLexemes.lexemes;
 				this.dataSourceId.data = data.outerLexemes.identifiers;
 				this.dataSourceCon.data = data.outerLexemes.constants;
 				this.dataSourceErr.data = data.outerLexemes.errors;

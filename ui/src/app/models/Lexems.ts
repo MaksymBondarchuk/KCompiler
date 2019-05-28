@@ -7,7 +7,7 @@ export class Result {
 
 export class OuterLexemes {
 
-    lexems: LexemInCode[];
+    lexemes: LexemInCode[];
     constants: Constant[];
     identifiers: Identifier[];
     errors: LexicalError[];
