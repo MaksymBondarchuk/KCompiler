@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using WebCompiler.Managers;
 using WebCompiler.Models;
@@ -10,20 +9,16 @@ namespace WebCompiler.Controllers
     {
         public string Text { get; set; }
     }
+    
     [Route("api/[controller]")]
     [ApiController]
     public class CompilerController : ControllerBase
     {
-        private ICompilerManager _manager;
+        private readonly ICompilerManager _manager;
+        
         public CompilerController(ICompilerManager manager)
         {
             _manager = manager;
-        }
-
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
-        {
-            return new string[] { "value1", "value2" };
         }
 
         [HttpPost]
@@ -40,13 +35,8 @@ namespace WebCompiler.Controllers
                         SyntaxResult = syn
                     };
             }
-            else
-            {
-                return BadRequest();
-            }
 
+            return BadRequest();
         }
-
-        
     }
 }
