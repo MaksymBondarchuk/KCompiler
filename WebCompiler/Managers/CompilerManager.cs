@@ -162,7 +162,7 @@ namespace WebCompiler.Managers
 			);
 		}
 
-		private void AddLexeme(string value, int line, IdentifierType type = IdentifierType.Unkown)
+		private void AddLexeme(string value, int line, IdentifierType type = IdentifierType.Unknown)
 		{
 			Lexemes.Add(new LexemeInCode
 				{
@@ -786,7 +786,7 @@ namespace WebCompiler.Managers
 			if (lexemes[i].Token.Equals("set"))
 			{
 				i++;
-				if (!ParseArthExpression(lexemes, ref i))
+				if (!ParseArithmeticExpression(lexemes, ref i))
 				{
 					SyntaxErr.Add(
 						new SyntaxErrors
@@ -819,7 +819,7 @@ namespace WebCompiler.Managers
 
 			i++;
 
-			if (!ParseArthExpression(lexemes, ref i))
+			if (!ParseArithmeticExpression(lexemes, ref i))
 			{
 				SyntaxErr.Add(
 					new SyntaxErrors
@@ -836,7 +836,7 @@ namespace WebCompiler.Managers
 
 		private bool ParseLogicalExpression(List<LexemeInCode> lexemes, ref int i)
 		{
-			if (!ParseArthExpression(lexemes, ref i))
+			if (!ParseArithmeticExpression(lexemes, ref i))
 			{
 				SyntaxErr.Add(
 					new SyntaxErrors
@@ -860,7 +860,7 @@ namespace WebCompiler.Managers
 
 			i++;
 
-			if (!ParseArthExpression(lexemes, ref i))
+			if (!ParseArithmeticExpression(lexemes, ref i))
 			{
 				SyntaxErr.Add(
 					new SyntaxErrors
@@ -873,7 +873,7 @@ namespace WebCompiler.Managers
 			return true;
 		}
 
-		private bool ParseArthExpression(List<LexemeInCode> lexemes, ref int i)
+		private bool ParseArithmeticExpression(List<LexemeInCode> lexemes, ref int i)
 		{
 			ParseSign(lexemes, ref i);
 
@@ -897,7 +897,7 @@ namespace WebCompiler.Managers
 					return true;
 				else
 				{
-					return ParseArthExpression(lexemes, ref i);
+					return ParseArithmeticExpression(lexemes, ref i);
 				}
 
 				//i = iBeforeOperation;
@@ -949,9 +949,9 @@ namespace WebCompiler.Managers
 
 		private bool ParseArthExpressionWithOperation(List<LexemeInCode> lexemes, ref int i)
 		{
-			if (!ParseArthExpression(lexemes, ref i)) return false;
+			if (!ParseArithmeticExpression(lexemes, ref i)) return false;
 			if (!ParseOperation(lexemes, ref i)) return false;
-			if (!ParseArthExpression(lexemes, ref i)) return false;
+			if (!ParseArithmeticExpression(lexemes, ref i)) return false;
 
 			return true;
 		}

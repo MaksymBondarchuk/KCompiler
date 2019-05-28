@@ -6,7 +6,7 @@
 <conditional operator>  ::= if <logical expression> then <operators list> fi
 <input operator>        ::= read ( <identifier> )
 <output operator>       ::= write ( <identifier> )
-<declaration operator>  ::= var <identifier> set <decimal> | var <identifier> set <identifier>
+<declaration operator>  ::= var <identifier> set <arithmetic expression> | var <identifier> set <identifier>
 <set operator>          ::= <identifier> set <arithmetic expression> | <identifier> set <identifier>
 <logical expression>    ::= <arithmetic expression> equals <arithmetic expression>
 <arithmetic expression> ::= <arithmetic leaf> 
@@ -33,6 +33,8 @@ enddo			1
 if				1
 then			1
 fi				1
+read			1
+write			1
 (				2
 )				2
 var				1
