@@ -7,7 +7,7 @@
 <input operator>        ::= read ( <identifier> )
 <output operator>       ::= write ( <identifier> )
 <declaration operator>  ::= var <identifier> set <arithmetic expression>
-<set operator>          ::= <identifier> set <arithmetic expression> | <identifier> set <identifier>
+<set operator>          ::= <identifier> set <arithmetic expression>
 <logical expression>    ::= <arithmetic expression> equals <arithmetic expression>
 								| <arithmetic expression> greaterthn <arithmetic expression>
 								| <arithmetic expression> lessthn <arithmetic expression>
