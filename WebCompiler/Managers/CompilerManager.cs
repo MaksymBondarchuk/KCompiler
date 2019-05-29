@@ -191,7 +191,7 @@ namespace WebCompiler.Managers
 				return "integer";
 			}
 
-			return GrammarLexemes.FirstOrDefault(e => e.Lexemes.Contains(value)).Token ?? "";
+			return GrammarLexemes.First(e => e.Lexemes.Contains(value)).Token ?? "";
 		}
 
 		private void AddError(string value, int line)

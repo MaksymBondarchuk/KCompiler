@@ -6,8 +6,8 @@ namespace WebCompiler.Models
 	{
 		public string Input { get; set; }
 		
-		public Stack<string> Stack { get; set; }
+		public Stack<PolishNotation> Stack { get; set; }
 		
-		public List<string> ReversePolishNotation { get; set; }
+		public List<PolishNotation> ReversePolishNotation { get; set; }
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using WebCompiler.Models;
 
 namespace WebCompiler.Managers
@@ -83,44 +84,38 @@ namespace WebCompiler.Managers
 
 		private void ParseDeclaration()
 		{
-			_i++;
+			// "var"
+			DijkstraStep("var", PolishNotationTokenType.Operator);
+
 			// Identifier
-			ReversePolishNotation.Add(new PolishNotation
-			{
-				Token = _outerLexemes.Lexemes[_i].SubString,
-				Type = PolishNotationTokenType.Identifier
-			});
+			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
 
-			_i++;
-
+			// "set" (optional)
 			if (_outerLexemes.Lexemes[_i].Token.Equals("set"))
 			{
-				_i++;
+				DijkstraStep("set", PolishNotationTokenType.Operator);
+				
 				ParseArithmeticExpression();
 			}
 
-			_i++; // Skip delimiter
+			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
 		private void ParseInput()
 		{
-			_i += 2; // skip "("
+			// "read"
+			DijkstraStep("read", PolishNotationTokenType.Operator);
+
+			// "("
+			MoveNext(); // Skip
 
 			// Identifier
-			ReversePolishNotation.Add(new PolishNotation
-			{
-				Token = _outerLexemes.Lexemes[_i].SubString,
-				Type = PolishNotationTokenType.Identifier
-			});
+			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
 
-			// "read"
-			ReversePolishNotation.Add(new PolishNotation
-			{
-				Token = "read",
-				Type = PolishNotationTokenType.Operator
-			});
+			// ")"
+			MoveNext(); // Skip
 
-			_i += 2; // skip ")" and delimiter
+			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
 		private void ParseArithmeticExpression()
@@ -130,9 +125,45 @@ namespace WebCompiler.Managers
 
 		#region Stack
 
+		[SuppressMessage("ReSharper", "CommentTypo")]
+		private void DijkstraStep(string input, PolishNotationTokenType type)
+		{
+			switch (type)
+			{
+				// 1.	Ідентифікатори та константи проходять від входу прямо до виходу
+				case PolishNotationTokenType.Identifier:
+					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
+					break;
+				case PolishNotationTokenType.Operator:
+					AddOperatorToStack(input);
+					break;
+				// 4.	Якщо вхідний ланцюжок порожній, всі операції зі стека по черзі передаються на вихід
+				// 		за ознакою кінця виразу (наприклад, «;»).
+				case PolishNotationTokenType.Delimiter:
+					while (Stack.Count != 0)
+					{
+						ReversePolishNotation.Add(Stack.Pop());
+					}
+					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
+
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(type), type, null);
+			}
+
+			Trace.Add(new PolishTrace
+			{
+				Input = input,
+				Stack = new Stack<PolishNotation>(Stack),
+				ReversePolishNotation = new List<PolishNotation>(ReversePolishNotation)
+			});
+			MoveNext();
+		}
+
+		[SuppressMessage("ReSharper", "CommentTypo")]
 		private void AddOperatorToStack(string @operator)
 		{
-			// 3. Якщо стек порожній, то поточна операція заноситься в стек
+			// 3.	Якщо стек порожній, то поточна операція заноситься в стек
 			if (Stack.Count == 0)
 			{
 				Stack.Push(new PolishNotation {Token = @operator, Type = PolishNotationTokenType.Operator});
@@ -141,18 +172,25 @@ namespace WebCompiler.Managers
 
 			PolishNotation head = Stack.Peek();
 
-			// 2. Якщо пріоритет операції, що знаходиться в стеку,
-			// не менший за пріоритет поточної вхідної операції,
-			// то операція зі стека подається на вихід і п.2 повторюється,
+			// 2.	Якщо пріоритет операції, що знаходиться в стеку,
+			// 		не менший за пріоритет поточної вхідної операції,
+			// 		то операція зі стека подається на вихід і п.2 повторюється,
 			if (_operatorsPriorities[head.Token] >= _operatorsPriorities[@operator])
 			{
+				ReversePolishNotation.Add(Stack.Pop()); // операція зі стека подається на вихід
+				AddOperatorToStack(@operator); // п.2 повторюється
 				return;
 			}
-			
+
 			// інакше поточна операція заноситься в стек.
 			Stack.Push(new PolishNotation {Token = @operator, Type = PolishNotationTokenType.Operator});
 		}
 
 		#endregion
+
+		private void MoveNext()
+		{
+			_i++;
+		}
 	}
 }

@@ -1,7 +1,7 @@
 ﻿<програма>              ::= program <program name> <operators list> endprogram
 <program name>			::= <identifier>
-<operators list>        ::= <operator>¶ | <operator>¶<operators list> | <empty>
-<operator>              ::= <loop operator> | <conditional operator> | <input operator> | <output operator> | <declaration operator>
+<operators list>        ::= <operator> <delimiter> | <operator> <delimiter> <operators list> | <empty>
+<operator>              ::= <loop operator> | <conditional operator> | <input operator> | <output operator> | <declaration operator> | <set operator>
 <loop operator>         ::= do while (<logical expression>) <operators list> enddo
 <conditional operator>  ::= if <logical expression> then <operators list> fi
 <input operator>        ::= read ( <identifier> )
@@ -9,7 +9,9 @@
 <declaration operator>  ::= var <identifier> set <arithmetic expression> | var <identifier> set <identifier>
 <set operator>          ::= <identifier> set <arithmetic expression> | <identifier> set <identifier>
 <logical expression>    ::= <arithmetic expression> equals <arithmetic expression>
-<arithmetic expression> ::= <arithmetic leaf> 
+								| <arithmetic expression> greaterthn <arithmetic expression>
+								| <arithmetic expression> lessthn <arithmetic expression>
+<arithmetic expression> ::= <sign> <arithmetic leaf> 
                                 | (<arithmetic expression>)
                                 | <arithmetic expression> <operation> <arithmetic expression>
 <arithmetic leaf>       ::= <decimal> | <identifier>
@@ -21,6 +23,7 @@
 <identifier>            ::= @ <word>
 <word>                  ::= <letter> | <number> | <letter> <word> | <number> <word>
 <letter>                ::= a-z
+<delimiter>             ::= \n
 
 
 
