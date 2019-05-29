@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using WebCompiler.Exception;
 using WebCompiler.Models;
 
 namespace WebCompiler.Managers
@@ -16,12 +17,23 @@ namespace WebCompiler.Managers
 
 		public SyntaxResult SyntaxAnalyzer(OuterLexemes lexemes)
 		{
-			List<SyntaxErrors> res = SyntaxParse(lexemes);
-			return new SyntaxResult
+			try
 			{
-				Success = !res?.Any() ?? true,
-				Text = res
-			};
+				List<SyntaxError> res = SyntaxParse(lexemes);
+				return new SyntaxResult
+				{
+					Success = !res?.Any() ?? true,
+					Text = res
+				};
+			}
+			catch (SyntaxException e)
+			{
+				return new SyntaxResult
+				{
+					Success = false,
+					Text = new List<SyntaxError> {new SyntaxError {Text = e.Message}}
+				};
+			}
 		}
 
 		#region Lexical
@@ -341,14 +353,14 @@ namespace WebCompiler.Managers
 
 		#region Syntax
 
-		private List<SyntaxErrors> SyntaxErr = new List<SyntaxErrors>();
+		private List<SyntaxError> SyntaxErr = new List<SyntaxError>();
 
-		private List<SyntaxErrors> SyntaxParse(OuterLexemes lexemes)
+		private List<SyntaxError> SyntaxParse(OuterLexemes lexemes)
 		{
 			int i = 0;
 			if (lexemes.Errors.Any())
 			{
-				SyntaxErr.Add(new SyntaxErrors
+				SyntaxErr.Add(new SyntaxError
 				{
 					Line = 0,
 					Text = "Lexical errors detected"
@@ -367,7 +379,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("program"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Program must start with the 'program' keyword in line {lexemes[i].LineNumber}"
 					});
@@ -379,7 +391,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("identifier"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"Program name identifier is expected, seen {lexemes[i].SubString} in line {lexemes[i].LineNumber}"
@@ -397,7 +409,7 @@ namespace WebCompiler.Managers
 			if (!ParseStatementsList(lexemes, ref i))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Error in parsing StatementList in line {lexemes[i].LineNumber}"
 					});
@@ -412,7 +424,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("endprogram"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Program must end with the 'endprogram' keyword"
 					});
@@ -424,7 +436,7 @@ namespace WebCompiler.Managers
 			if (i != lexemes.Count - 1 && diff.Any(e => !e.Token.Equals("delimiter")))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"Smth was found in the end of the program: {lexemes[i].SubString} in line {lexemes[i].LineNumber}"
@@ -475,7 +487,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("delimiter"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Delimiter expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -493,7 +505,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("while"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"'while' keyword expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -511,7 +523,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals("("))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"'(' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -523,7 +535,7 @@ namespace WebCompiler.Managers
 			if (!ParseLogicalExpression(lexemes, ref i))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Error parsing Logical expression in line {lexemes[i].LineNumber}"
 					});
@@ -534,7 +546,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals(")"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"')' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -551,7 +563,7 @@ namespace WebCompiler.Managers
 			if (!ParseStatementsList(lexemes, ref i))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Error parsing StatementList in line {lexemes[i].LineNumber}"
 					});
@@ -566,7 +578,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals("enddo"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"'enddo' keyword expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -593,7 +605,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals("("))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"'(' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -607,7 +619,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals(")"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"')' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -624,7 +636,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals("then"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"'then' keyword expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -642,7 +654,7 @@ namespace WebCompiler.Managers
 			if (!ParseStatementsList(lexemes, ref i))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Error parsing StatementList in line {lexemes[i].LineNumber}"
 					});
@@ -657,7 +669,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals("fi"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"'fi' keyword expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -678,7 +690,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals("("))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"'(' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -690,7 +702,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("identifier"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"Identifier expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -703,7 +715,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals(")"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"')' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -726,7 +738,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals("("))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"'(' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -738,7 +750,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("identifier"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"Identifier expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -751,7 +763,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].SubString.Equals(")"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"')' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
 					});
@@ -773,7 +785,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("identifier"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"Identifier expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -789,7 +801,7 @@ namespace WebCompiler.Managers
 				if (!ParseArithmeticExpression(lexemes, ref i))
 				{
 					SyntaxErr.Add(
-						new SyntaxErrors
+						new SyntaxError
 						{
 							Text =
 								$"'set' keyword expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -809,7 +821,7 @@ namespace WebCompiler.Managers
 			if (!lexemes[i].Token.Equals("set"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"'set' keyword expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -822,7 +834,7 @@ namespace WebCompiler.Managers
 			if (!ParseArithmeticExpression(lexemes, ref i))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Error during parsing Arithmetic Expression in line {lexemes[i].LineNumber}"
 					});
@@ -839,7 +851,7 @@ namespace WebCompiler.Managers
 			if (!ParseArithmeticExpression(lexemes, ref i))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Error during parsing Arithmetic Expression in line {lexemes[i].LineNumber}"
 					});
@@ -850,7 +862,7 @@ namespace WebCompiler.Managers
 			    !lexemes[i].Token.Equals("lessthn"))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text =
 							$"'equals' or 'greaterthn' or 'lessthn' keyword expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
@@ -863,7 +875,7 @@ namespace WebCompiler.Managers
 			if (!ParseArithmeticExpression(lexemes, ref i))
 			{
 				SyntaxErr.Add(
-					new SyntaxErrors
+					new SyntaxError
 					{
 						Text = $"Error during parsing Arithmetic Expression in line {lexemes[i].LineNumber}"
 					});
@@ -875,62 +887,80 @@ namespace WebCompiler.Managers
 
 		private bool ParseArithmeticExpression(List<LexemeInCode> lexemes, ref int i)
 		{
-			ParseSign(lexemes, ref i);
+			#region <sign> <arithmetic leaf>
 
-			bool parenthesis = false;
-			if (lexemes[i].SubString.Equals("("))
 			{
-				parenthesis = true;
-				i++;
-			}
-
-			bool leaf = ParseArithmeticLeaf(lexemes, ref i);
-			if (!parenthesis && !leaf)
-				return false;
-			//i--;
-
-			if (!parenthesis)
-			{
-				int iBeforeOperation = i;
-				bool operation = ParseOperationLight(lexemes, ref i);
-				if (!operation)
+				bool isSign = ParseSign(lexemes, ref i);
+				bool isArithmeticLeaf = ParseArithmeticLeaf(lexemes, ref i);
+				if (isSign && !isArithmeticLeaf)
 				{
-					return true;
+					throw new SyntaxException(
+						$"Identifier or literal expected on line {lexemes[i].LineNumber}, instead seen {lexemes[i].SubString}");
 				}
-				return ParseArithmeticExpression(lexemes, ref i);
 
-				//i = iBeforeOperation;
-			}
-
-			i--;
-			if (ParseArthExpressionWithOperation(lexemes, ref i) || ParseArithmeticLeaf(lexemes, ref i)) return true;
-
-			if (!lexemes[i].SubString.Equals(")"))
-			{
-				SyntaxErr.Add(
-					new SyntaxErrors
-					{
-						Text = $"Expecting ')' in line {lexemes[i].LineNumber}, instead seen {lexemes[i].SubString}"
-					});
-			}
-
-			i++;
-
-			SyntaxErr.Add(
-				new SyntaxErrors
+				#region <arithmetic expression> <operation> <arithmetic expression>
+				bool isOperation = ParseOperation(lexemes, ref i);
+				if (isArithmeticLeaf && !isOperation)
 				{
-					Text = $"Error during parsing Arithmetic Expression in line {lexemes[i].LineNumber}"
-				});
-			return false;
+					if (lexemes[i].SubString.Equals(")") || lexemes[i].SubString.Equals("\n"))
+					{
+						return true;
+					}
+
+					throw new SyntaxException(
+						$"Operation expected on line {lexemes[i].LineNumber}, instead seen {lexemes[i].SubString}");
+				}
+
+				if (isArithmeticLeaf)
+				{
+					return ParseArithmeticExpression(lexemes, ref i);
+				}
+				#endregion
+			}
+
+			#endregion
+
+			#region (<arithmetic expression>)
+
+			bool isParenthesis = lexemes[i].SubString.Equals("(");
+			if (isParenthesis)
+			{
+				i++;
+
+				if (!ParseArithmeticExpression(lexemes, ref i))
+				{
+					throw new SyntaxException($"Incorrect Arithmetic Expression");
+				}
+
+				if (!lexemes[i].SubString.Equals(")"))
+				{
+					throw new SyntaxException($"Expecting ')' in line {lexemes[i].LineNumber}, instead seen {lexemes[i].SubString}");
+				}
+				i++;
+
+				bool isOperation = ParseOperation(lexemes, ref i);
+				if (isOperation)
+				{
+					ParseArithmeticExpression(lexemes, ref i);
+				}
+				return true;
+			}
+
+			#endregion
+
+			throw new SyntaxException($"Error during parsing Arithmetic Expression in line {lexemes[i].LineNumber}");
 		}
 
 
-		private void ParseSign(List<LexemeInCode> lexemes, ref int i)
+		private bool ParseSign(List<LexemeInCode> lexemes, ref int i)
 		{
 			if (lexemes[i].SubString.Equals("+") || lexemes[i].SubString.Equals("-"))
 			{
 				i++;
+				return true;
 			}
+
+			return false;
 		}
 
 		private bool ParseArithmeticLeaf(List<LexemeInCode> lexemes, ref int i)
@@ -945,7 +975,6 @@ namespace WebCompiler.Managers
 			return false;
 		}
 
-
 		private bool ParseArthExpressionWithOperation(List<LexemeInCode> lexemes, ref int i)
 		{
 			if (!ParseArithmeticExpression(lexemes, ref i)) return false;
@@ -958,14 +987,12 @@ namespace WebCompiler.Managers
 		private bool ParseOperation(List<LexemeInCode> lexemes, ref int i)
 		{
 			if (!lexemes[i].SubString.Equals("+") && !lexemes[i].SubString.Equals("-") &&
-			    !lexemes[i].SubString.Equals("*") & !lexemes[i].SubString.Equals("/"))
+			    !lexemes[i].SubString.Equals("*") && !lexemes[i].SubString.Equals("/"))
 			{
-				SyntaxErr.Add(
-					new SyntaxErrors
-					{
-						Text =
-							$"Math operation sign expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
-					});
+//				SyntaxErr.Add(new SyntaxErrors
+//				{
+//					Text = $"Math operation sign expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
+//				});
 				return false;
 			}
 

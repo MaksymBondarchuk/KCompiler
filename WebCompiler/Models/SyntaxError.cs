@@ -2,7 +2,7 @@
 
 namespace WebCompiler.Models
 {
-    public class SyntaxErrors
+    public class SyntaxError
     {
         public int Line { get; set; }
         public string Text { get; set; }
@@ -16,6 +16,6 @@ namespace WebCompiler.Models
     public class SyntaxResult
     {
         public bool Success { get; set; }
-        public List<SyntaxErrors> Text { get; set; }
+        public List<SyntaxError> Text { get; set; }
     }
 }
