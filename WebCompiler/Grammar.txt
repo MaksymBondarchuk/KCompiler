@@ -6,7 +6,7 @@
 <conditional operator>  ::= if <logical expression> then <operators list> fi
 <input operator>        ::= read ( <identifier> )
 <output operator>       ::= write ( <identifier> )
-<declaration operator>  ::= var <identifier> set <arithmetic expression>
+<declaration operator>  ::= var <identifier> | var <identifier> set <arithmetic expression>
 <set operator>          ::= <identifier> set <arithmetic expression>
 <logical expression>    ::= <arithmetic expression> equals <arithmetic expression>
 								| <arithmetic expression> greaterthn <arithmetic expression>
