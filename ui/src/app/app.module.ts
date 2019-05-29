@@ -4,15 +4,16 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule, MatCheckboxModule, MatCardModule, MatGridListModule, MatExpansionModule, MatFormFieldModule, MatDividerModule} from '@angular/material';
-import {MatInputModule} from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule, MatCheckboxModule, MatCardModule, MatGridListModule, MatFormFieldModule, MatDividerModule } from '@angular/material';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import { HttpClientModule  } from '@angular/common/http';
-import {MatTableModule} from '@angular/material/table';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { HttpClientModule } from '@angular/common/http';
+import { MatTableModule } from '@angular/material/table';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 
 @NgModule({
@@ -24,12 +25,12 @@ import {MatTableModule} from '@angular/material/table';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatButtonModule, 
+    MatButtonModule,
     MatCheckboxModule,
     MatCardModule,
-    MatGridListModule, 
+    MatGridListModule,
     MatExpansionModule,
-    MatIconModule, 
+    MatIconModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
@@ -41,12 +42,12 @@ import {MatTableModule} from '@angular/material/table';
     MatTableModule
   ],
   exports: [
-    MatButtonModule, 
+    MatButtonModule,
     MatCheckboxModule,
     MatCardModule,
-    MatGridListModule, 
+    MatGridListModule,
     MatExpansionModule,
-    MatIconModule, 
+    MatIconModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,

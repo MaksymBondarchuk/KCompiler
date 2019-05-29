@@ -7,6 +7,8 @@ namespace WebCompiler.Managers
     {
         List<PolishNotation> ReversePolishNotation { get; }
         
+        List<PolishTrace> Trace { get; }
+        
         void Run(OuterLexemes lexemes);
     }
 }

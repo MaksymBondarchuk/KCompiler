@@ -1,219 +1,289 @@
 <mat-card class="">
-  <mat-card-header>
-    <mat-card-title>Compiler </mat-card-title>
-  </mat-card-header>
-
-
-  <mat-card-content>
-    <mat-slide-toggle [checked]="fromFile" [(ngModel)]="fromFile">Upload code form file</mat-slide-toggle>
-    <div *ngIf="!fromFile">
-      <mat-form-field style="width:100%!important">
-        <textarea matInput rows="10" placeholder="Type your code here" [(ngModel)]="codetext"></textarea>
-      </mat-form-field>
-
-      <mat-card-actions>
-        <button mat-flat-button color="accent" (click)="onCompileTextClick()">Compile</button>
-      </mat-card-actions>
-    </div>
-    <div *ngIf="fromFile">
-
-      <div style="margin-bottom: 16px;margin-top: 16px;">
-        <form method="post" enctype="multipart/form-data" (ngSubmit)="onCompileFileClick()">
-          <input id="file" (change)="onFileChange($event)" #fileInput style="margin-top: 16px;margin-bottom: 16px;" [ngModelOptions]="{standalone: true}"
-            accept=".txt" placeholder="Upload file with your code" type="file" [(ngModel)]="codefile">
-          <mat-card-actions>
-            <button mat-flat-button color="accent" type="submit" class="btn btn-success">Submit</button>
-          </mat-card-actions>
-        </form>
-      </div>
-
-    </div>
-
-  </mat-card-content>
-
-</mat-card>
-
-<mat-card>
-  <mat-card-header>
-      <mat-card-title>Syntax Errors </mat-card-title>
+    <mat-card-header>
+        <mat-card-title>Compiler</mat-card-title>
     </mat-card-header>
-<mat-card-content>
-
-  <table mat-table [dataSource]="dataSourceSyntax" class="mat-elevation-z8" style = "width: 100%">
-
-    <ng-container matColumnDef="line">
-      <th mat-header-cell *matHeaderCellDef> Line No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.line}} </td>
-    </ng-container>
 
 
+    <mat-card-content>
+        <mat-slide-toggle [checked]="fromFile" [(ngModel)]="fromFile">Upload code form file</mat-slide-toggle>
+        <div *ngIf="!fromFile">
+            <mat-form-field style="width:100%!important">
+                <textarea matInput rows="10" placeholder="Type your code here" [(ngModel)]="codetext"></textarea>
+            </mat-form-field>
 
-    <!-- Weight Column -->
-    <ng-container matColumnDef="text">
-      <th mat-header-cell *matHeaderCellDef> Error </th>
-      <td mat-cell *matCellDef="let element"> {{element.text}} </td>
-    </ng-container>
+            <mat-card-actions>
+                <button mat-flat-button color="accent" (click)="onCompileTextClick()">Compile</button>
+            </mat-card-actions>
+        </div>
+        <div *ngIf="fromFile">
 
+            <div style="margin-bottom: 16px;margin-top: 16px;">
+                <form method="post" enctype="multipart/form-data" (ngSubmit)="onCompileFileClick()">
+                    <input id="file" (change)="onFileChange($event)" #fileInput
+                           style="margin-top: 16px;margin-bottom: 16px;"
+                           [ngModelOptions]="{standalone: true}" accept=".txt" placeholder="Upload file with your code"
+                           type="file"
+                           [(ngModel)]="codefile">
+                    <mat-card-actions>
+                        <button mat-flat-button color="accent" type="submit" class="btn btn-success">Submit</button>
+                    </mat-card-actions>
+                </form>
+            </div>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumnsErrSyn"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumnsErr;"></tr>
-  </table>
-</mat-card-content>
+        </div>
+
+    </mat-card-content>
+
 </mat-card>
 
-<mat-card>
-  <mat-card-header>
-      <mat-card-title>Lexemes Table (grammar)</mat-card-title>
-    </mat-card-header>
-<mat-card-content>
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Syntax Analyser
+            </mat-panel-title>
+            <mat-panel-description>
+                Syntax Errors
+            </mat-panel-description>
+        </mat-expansion-panel-header>
 
-  <table mat-table [dataSource]="dataSourceGr" class="mat-elevation-z8" style = "width: 100%">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Syntax Errors</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
 
-    <ng-container matColumnDef="text">
-      <th mat-header-cell *matHeaderCellDef> Token </th>
-      <td mat-cell *matCellDef="let element"> {{element.token}} </td>
-    </ng-container>
+                <table mat-table [dataSource]="dataSourceSyntax" class="mat-elevation-z8" style="width: 100%">
 
-
-
-    <!-- Weight Column -->
-    <ng-container matColumnDef="token">
-      <th mat-header-cell *matHeaderCellDef> Lexeme example </th>
-      <td mat-cell *matCellDef="let element"> {{PrintToken(element.lexemes.join(', '))}} </td>
-    </ng-container>
-
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumnsGr"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumnsGr;"></tr>
-  </table>
-</mat-card-content>
-</mat-card>
-
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Output Lexemes (from code)</mat-card-title>
-      </mat-card-header>
-  <mat-card-content>
-
-    <table mat-table [dataSource]="dataSourceLexems" class="mat-elevation-z8" style = "width: 100%">
-
-      <ng-container matColumnDef="lineNumber">
-        <th mat-header-cell *matHeaderCellDef> Line No. </th>
-        <td mat-cell *matCellDef="let element"> {{element.lineNumber}} </td>
-      </ng-container>
-
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Lexeme </th>
-        <td mat-cell *matCellDef="let element"> {{PrintToken(element.subString)}} </td>
-      </ng-container>
-
-      <!-- Weight Column -->
-      <ng-container matColumnDef="token">
-        <th mat-header-cell *matHeaderCellDef> Token </th>
-        <td mat-cell *matCellDef="let element"> {{element.token}} </td>
-      </ng-container>
-
-      <!-- Symbol Column -->
-      <ng-container matColumnDef="index">
-        <th mat-header-cell *matHeaderCellDef> Index </th>
-        <td mat-cell *matCellDef="let element"> {{element.index}} </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </mat-card-content>
-</mat-card>
+                    <ng-container matColumnDef="line">
+                        <th mat-header-cell *matHeaderCellDef> Line No.</th>
+                        <td mat-cell *matCellDef="let element"> {{element.line}} </td>
+                    </ng-container>
 
 
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Identifiers</mat-card-title>
-      </mat-card-header>
-  <mat-card-content>
-
-    <table mat-table [dataSource]="dataSourceId" class="mat-elevation-z8" style = "width: 100%">
-
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Identifier </th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-      </ng-container>
-
-      <!-- Name Column -->
-      <ng-container matColumnDef="index">
-        <th mat-header-cell *matHeaderCellDef> Index </th>
-        <td mat-cell *matCellDef="let element"> {{element.index}} </td>
-      </ng-container>
-
-      <!-- Weight Column -->
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef> Type </th>
-        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-      </ng-container>
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="text">
+                        <th mat-header-cell *matHeaderCellDef> Error</th>
+                        <td mat-cell *matCellDef="let element"> {{element.text}} </td>
+                    </ng-container>
 
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumnsId"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumnsId;"></tr>
-    </table>
-  </mat-card-content>
-</mat-card>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsErrSyn"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsErr;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </mat-expansion-panel>
 
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Constants</mat-card-title>
-      </mat-card-header>
-  <mat-card-content>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Lexical Analyser
+            </mat-panel-title>
+            <mat-panel-description>
+                Lexemes Table (grammar), Output Lexemes (from code), Identifiers, Constants, Lexical Errors
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Lexemes Table (grammar)</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
 
-    <table mat-table [dataSource]="dataSourceCon" class="mat-elevation-z8" style = "width: 100%">
+                <table mat-table [dataSource]="dataSourceGr" class="mat-elevation-z8" style="width: 100%">
 
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Identifier </th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-      </ng-container>
-
-
-
-      <!-- Weight Column -->
-      <ng-container matColumnDef="index">
-        <th mat-header-cell *matHeaderCellDef> Index </th>
-        <td mat-cell *matCellDef="let element"> {{element.index}} </td>
-      </ng-container>
-
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumnsCon"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumnsCon;"></tr>
-    </table>
-  </mat-card-content>
-</mat-card>
-
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Lexical Errors </mat-card-title>
-      </mat-card-header>
-  <mat-card-content>
-
-    <table mat-table [dataSource]="dataSourceErr" class="mat-elevation-z8" style = "width: 100%">
-
-      <ng-container matColumnDef="line">
-        <th mat-header-cell *matHeaderCellDef> Line No. </th>
-        <td mat-cell *matCellDef="let element"> {{element.line}} </td>
-      </ng-container>
+                    <ng-container matColumnDef="text">
+                        <th mat-header-cell *matHeaderCellDef> Token</th>
+                        <td mat-cell *matCellDef="let element"> {{element.token}} </td>
+                    </ng-container>
 
 
-
-      <!-- Weight Column -->
-      <ng-container matColumnDef="text">
-        <th mat-header-cell *matHeaderCellDef> Error </th>
-        <td mat-cell *matCellDef="let element"> {{element.text}} </td>
-      </ng-container>
-
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumnsErr"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumnsErr;"></tr>
-    </table>
-  </mat-card-content>
-</mat-card>
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="token">
+                        <th mat-header-cell *matHeaderCellDef> Lexeme example</th>
+                        <td mat-cell *matCellDef="let element"> {{PrintToken(element.lexemes.join(', '))}} </td>
+                    </ng-container>
 
 
-<router-outlet></router-outlet>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsGr"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsGr;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Output Lexemes (from code)</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+
+                <table mat-table [dataSource]="dataSourceLexems" class="mat-elevation-z8" style="width: 100%">
+
+                    <ng-container matColumnDef="lineNumber">
+                        <th mat-header-cell *matHeaderCellDef> Line No.</th>
+                        <td mat-cell *matCellDef="let element"> {{element.lineNumber}} </td>
+                    </ng-container>
+
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Lexeme</th>
+                        <td mat-cell *matCellDef="let element"> {{PrintToken(element.subString)}} </td>
+                    </ng-container>
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="token">
+                        <th mat-header-cell *matHeaderCellDef> Token</th>
+                        <td mat-cell *matCellDef="let element"> {{element.token}} </td>
+                    </ng-container>
+
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="index">
+                        <th mat-header-cell *matHeaderCellDef> Index</th>
+                        <td mat-cell *matCellDef="let element"> {{element.index}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Identifiers</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+
+                <table mat-table [dataSource]="dataSourceId" class="mat-elevation-z8" style="width: 100%">
+
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Identifier</th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                    </ng-container>
+
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="index">
+                        <th mat-header-cell *matHeaderCellDef> Index</th>
+                        <td mat-cell *matCellDef="let element"> {{element.index}} </td>
+                    </ng-container>
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="type">
+                        <th mat-header-cell *matHeaderCellDef> Type</th>
+                        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+                    </ng-container>
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsId"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsId;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Constants</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+
+                <table mat-table [dataSource]="dataSourceCon" class="mat-elevation-z8" style="width: 100%">
+
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Identifier</th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                    </ng-container>
+
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="index">
+                        <th mat-header-cell *matHeaderCellDef> Index</th>
+                        <td mat-cell *matCellDef="let element"> {{element.index}} </td>
+                    </ng-container>
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsCon"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsCon;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Lexical Errors</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+
+                <table mat-table [dataSource]="dataSourceErr" class="mat-elevation-z8" style="width: 100%">
+
+                    <ng-container matColumnDef="line">
+                        <th mat-header-cell *matHeaderCellDef> Line No.</th>
+                        <td mat-cell *matCellDef="let element"> {{element.line}} </td>
+                    </ng-container>
+
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="text">
+                        <th mat-header-cell *matHeaderCellDef> Error</th>
+                        <td mat-cell *matCellDef="let element"> {{element.text}} </td>
+                    </ng-container>
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsErr"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsErr;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Reverse Polish Notation
+            </mat-panel-title>
+            <mat-panel-description>
+                Reverse Polish Notation, Execution Step-by-Step
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Reverse Polish Notation</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                {{polishNotation}}
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Polish Notation Trace</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+
+                <table mat-table [dataSource]="dataSourcePolish" class="mat-elevation-z8" style="width: 100%">
+
+                    <ng-container matColumnDef="input">
+                        <th mat-header-cell *matHeaderCellDef>Input Token</th>
+                        <td mat-cell *matCellDef="let element"> {{element.input}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="stack">
+                        <th mat-header-cell *matHeaderCellDef>Stack</th>
+                        <td mat-cell *matCellDef="let element"> {{element.stack}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="reversePolishNotation">
+                        <th mat-header-cell *matHeaderCellDef>Inverse Polish Notation</th>
+                        <td mat-cell *matCellDef="let element"> {{element.reversePolishNotation}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsPolish"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsPolish;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </mat-expansion-panel>
+
+    <router-outlet></router-outlet>
+</mat-accordion>

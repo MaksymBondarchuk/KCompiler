@@ -7,6 +7,7 @@ namespace WebCompiler.Managers
 	public class PolishManager : IPolishManager
 	{
 		public List<PolishNotation> ReversePolishNotation { get; } = new List<PolishNotation>();
+		public List<PolishTrace> Trace { get; } = new List<PolishTrace>();
 
 		private int _i;
 		private OuterLexemes _outerLexemes;

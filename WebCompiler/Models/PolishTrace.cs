@@ -8,6 +8,6 @@ namespace WebCompiler.Models
 		
 		public Stack<string> Stack { get; set; }
 		
-		public List<string> InversePolishNotation { get; set; }
+		public List<string> ReversePolishNotation { get; set; }
 	}
 }

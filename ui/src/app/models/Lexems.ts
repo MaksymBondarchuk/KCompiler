@@ -1,9 +1,8 @@
-
 export class Result {
     outerLexemes: OuterLexemes;
-    syntaxResult:SyntaxResult;
+    syntaxResult: SyntaxResult;
+    polishResult: PolishResult;
 }
-
 
 export class OuterLexemes {
 
@@ -46,7 +45,17 @@ export class LexicalError {
 }
 
 export class SyntaxResult {
-
-    Success: boolean;
+    success: boolean;
     text: LexicalError[];
+}
+
+export class PolishTrace {
+    input: string;
+    stack: string;
+    reversePolishNotation: string;
+}
+
+export class PolishResult {
+    reversePolishNotation: string;
+    trace: PolishTrace[];
 }
