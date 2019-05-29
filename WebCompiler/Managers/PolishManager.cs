@@ -31,7 +31,9 @@ namespace WebCompiler.Managers
 			{"+", 3},
 			{"-", 3},
 			{"*", 3},
-			{"/", 3}
+			{"/", 3},
+			{"@+", 3},
+			{"@-", 3}
 		};
 
 		private Stack<PolishNotation> Stack { get; } = new Stack<PolishNotation>();
@@ -133,10 +135,28 @@ namespace WebCompiler.Managers
 
 			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
-
+		
 		private void ParseArithmeticExpression()
 		{
-			throw new NotImplementedException();
+			ParseSign();
+		}
+
+		private void ParseSign()
+		{
+			if (_outerLexemes.Lexemes[_i].SubString.Equals("+") || _outerLexemes.Lexemes[_i].SubString.Equals("-"))
+			{
+				DijkstraStep($"@{_outerLexemes.Lexemes[_i].SubString}", PolishNotationTokenType.Operator);
+			}
+		}
+		
+		private void ParseArithmeticLeaf()
+		{
+			if (_outerLexemes.Lexemes[_i].Token.Equals("float") 
+			    || _outerLexemes.Lexemes[_i].Token.Equals("integer")
+			    || _outerLexemes.Lexemes[_i].Token.Equals("identifier"))
+			{
+				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Literal);
+			}
 		}
 
 		#region Stack
@@ -148,6 +168,7 @@ namespace WebCompiler.Managers
 			{
 				// 1.	Ідентифікатори та константи проходять від входу прямо до виходу
 				case PolishNotationTokenType.Identifier:
+				case PolishNotationTokenType.Literal:
 					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
 					break;
 				case PolishNotationTokenType.Operator:
@@ -160,9 +181,7 @@ namespace WebCompiler.Managers
 					{
 						ReversePolishNotation.Add(Stack.Pop());
 					}
-
 					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
-
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(type), type, null);

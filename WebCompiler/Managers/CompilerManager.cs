@@ -877,28 +877,27 @@ namespace WebCompiler.Managers
 		{
 			ParseSign(lexemes, ref i);
 
-			bool parenth = false;
+			bool parenthesis = false;
 			if (lexemes[i].SubString.Equals("("))
 			{
-				parenth = true;
+				parenthesis = true;
 				i++;
 			}
 
 			bool leaf = ParseArithmeticLeaf(lexemes, ref i);
-			if (!parenth && !leaf)
+			if (!parenthesis && !leaf)
 				return false;
 			//i--;
 
-			if (!parenth)
+			if (!parenthesis)
 			{
 				int iBeforeOperation = i;
 				bool operation = ParseOperationLight(lexemes, ref i);
 				if (!operation)
-					return true;
-				else
 				{
-					return ParseArithmeticExpression(lexemes, ref i);
+					return true;
 				}
+				return ParseArithmeticExpression(lexemes, ref i);
 
 				//i = iBeforeOperation;
 			}
@@ -906,7 +905,7 @@ namespace WebCompiler.Managers
 			i--;
 			if (ParseArthExpressionWithOperation(lexemes, ref i) || ParseArithmeticLeaf(lexemes, ref i)) return true;
 
-			if (parenth && !lexemes[i].SubString.Equals(")"))
+			if (!lexemes[i].SubString.Equals(")"))
 			{
 				SyntaxErr.Add(
 					new SyntaxErrors

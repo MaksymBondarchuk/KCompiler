@@ -43,7 +43,9 @@ write			1
 var				1
 set				1
 equals			1
-+				3
--				3
++ (binary)		3
+- (binary)		3
 *				3
 /				3
++ (unary)		4   // @+
+- (unary)		4   // @-
