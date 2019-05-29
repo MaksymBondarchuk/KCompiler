@@ -6,9 +6,9 @@ namespace WebCompiler.Models
 		
 		public PolishNotationTokenType Type { get; set; }
 
-//		public override string ToString()
-//		{
-//			return $"{Token} - ({Type.ToString()})";
-//		}
+		public override string ToString()
+		{
+			return $"{Token} - ({Type.ToString()})";
+		}
 	}
 }

@@ -52,7 +52,6 @@ namespace WebCompiler.Managers
 			do
 			{
 				ParseStatement();
-
 			} while (_outerLexemes.Lexemes[_i].Token == "do"
 			         || _outerLexemes.Lexemes[_i].Token == "if"
 			         || _outerLexemes.Lexemes[_i].Token == "read"
@@ -135,19 +134,24 @@ namespace WebCompiler.Managers
 
 			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
-		
+
 		private void ParseArithmeticExpression()
 		{
 			do
 			{
 				// Any of the following can be in arithmetic expression
+				ParseOperation(); // !!! Must be before Sign ("+" and "-" are both Sign and Operation) - we check difference in Operation
 				ParseSign();
 				ParseArithmeticLeaf();
-				ParseOperation();
-			} while (_outerLexemes.Lexemes[_i].Token != "delimiter"
-			         && _outerLexemes.Lexemes[_i].Token != "equals"
-			         && _outerLexemes.Lexemes[_i].Token != "greaterthn"
-			         && _outerLexemes.Lexemes[_i].Token != "lessthn");
+
+				if (_outerLexemes.Lexemes[_i].SubString.Equals("(") || _outerLexemes.Lexemes[_i].SubString.Equals(")"))
+				{
+					DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Operator);
+				}
+			} while (_outerLexemes.Lexemes[_i].Token != "delimiter" &&
+			         _outerLexemes.Lexemes[_i].Token != "equals" &&
+			         _outerLexemes.Lexemes[_i].Token != "greaterthn" &&
+			         _outerLexemes.Lexemes[_i].Token != "lessthn");
 		}
 
 		private void ParseSign()
@@ -157,20 +161,29 @@ namespace WebCompiler.Managers
 				DijkstraStep($"@{_outerLexemes.Lexemes[_i].SubString}", PolishNotationTokenType.Operator);
 			}
 		}
-		
+
 		private void ParseArithmeticLeaf()
 		{
-			if (_outerLexemes.Lexemes[_i].Token.Equals("float") 
+			if (_outerLexemes.Lexemes[_i].Token.Equals("float")
 			    || _outerLexemes.Lexemes[_i].Token.Equals("integer")
 			    || _outerLexemes.Lexemes[_i].Token.Equals("identifier"))
 			{
 				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Literal);
 			}
 		}
-		
+
 		private void ParseOperation()
 		{
-			if (_outerLexemes.Lexemes[_i].SubString.Equals("+") 
+			LexemeInCode previousLexeme = _outerLexemes.Lexemes[_i - 1];
+			if (previousLexeme.Token != "identifier" &&
+			    previousLexeme.Token != "integer" &&
+			    previousLexeme.Token != "float" &&
+			    previousLexeme.SubString != ")")
+			{
+				return;
+			}
+
+			if (_outerLexemes.Lexemes[_i].SubString.Equals("+")
 			    || _outerLexemes.Lexemes[_i].SubString.Equals("-")
 			    || _outerLexemes.Lexemes[_i].SubString.Equals("*")
 			    || _outerLexemes.Lexemes[_i].SubString.Equals("/"))
@@ -202,6 +215,7 @@ namespace WebCompiler.Managers
 					{
 						ReversePolishNotation.Add(Stack.Pop());
 					}
+
 					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
 					break;
 				default:
@@ -220,6 +234,13 @@ namespace WebCompiler.Managers
 		[SuppressMessage("ReSharper", "CommentTypo")]
 		private void AddOperatorToStack(string @operator)
 		{
+			// Відкриваюча дужка "(" повинна мати найнижчий пріоритет, але записуватися в стек, нічого не виштовхуючи
+			if (@operator == "(")
+			{
+				Stack.Push(new PolishNotation {Token = @operator, Type = PolishNotationTokenType.Operator});
+				return;
+			}
+
 			// 3.	Якщо стек порожній, то поточна операція заноситься в стек
 			if (Stack.Count == 0)
 			{
@@ -234,13 +255,21 @@ namespace WebCompiler.Managers
 			// 		то операція зі стека подається на вихід і п.2 повторюється,
 			if (_operatorsPriorities[head.Token] >= _operatorsPriorities[@operator])
 			{
-				ReversePolishNotation.Add(Stack.Pop()); // операція зі стека подається на вихід
+				PolishNotation notation = Stack.Pop();
+				if (notation.Token != "(") // Причому "(" ніколи не передається на вихід
+				{
+					ReversePolishNotation.Add(notation); // операція зі стека подається на вихід
+				}
+
 				AddOperatorToStack(@operator); // п.2 повторюється
 				return;
 			}
 
 			// інакше поточна операція заноситься в стек.
-			Stack.Push(new PolishNotation {Token = @operator, Type = PolishNotationTokenType.Operator});
+			if (@operator != ")") // Причому ")" ніколи не заноситься в стек
+			{
+				Stack.Push(new PolishNotation {Token = @operator, Type = PolishNotationTokenType.Operator});
+			}
 		}
 
 		#endregion
