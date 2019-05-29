@@ -47,19 +47,19 @@ namespace WebCompiler.Managers
 
 		private void ParseStatementsList()
 		{
-			bool? err;
-
 			do
 			{
-				err = ParseStatement();
-				if (err.HasValue && err.Value == false)
-				{
-					return;
-				}
-			} while (err != null);
+				ParseStatement();
+
+			} while (_outerLexemes.Lexemes[_i].Token == "do"
+			         || _outerLexemes.Lexemes[_i].Token == "if"
+			         || _outerLexemes.Lexemes[_i].Token == "read"
+			         || _outerLexemes.Lexemes[_i].Token == "write"
+			         || _outerLexemes.Lexemes[_i].Token == "var"
+			         || _outerLexemes.Lexemes[_i].Token == "identifier");
 		}
 
-		private bool? ParseStatement()
+		private void ParseStatement()
 		{
 			switch (_outerLexemes.Lexemes[_i].Token)
 			{
@@ -69,16 +69,15 @@ namespace WebCompiler.Managers
 //                    return ParseConditional(lexemes);
 				case "read":
 					ParseInput();
-					return true;
-//                case "write":
-//                    return ParseOutput(lexemes);
+					break;
+				case "write":
+					ParseOutput();
+					break;
 				case "var":
 					ParseDeclaration();
-					return true;
+					break;
 //                case "identifier":
 //                    return ParseAssign(lexemes);
-				default:
-					return null;
 			}
 		}
 
@@ -94,7 +93,7 @@ namespace WebCompiler.Managers
 			if (_outerLexemes.Lexemes[_i].Token.Equals("set"))
 			{
 				DijkstraStep("set", PolishNotationTokenType.Operator);
-				
+
 				ParseArithmeticExpression();
 			}
 
@@ -105,6 +104,23 @@ namespace WebCompiler.Managers
 		{
 			// "read"
 			DijkstraStep("read", PolishNotationTokenType.Operator);
+
+			// "("
+			MoveNext(); // Skip
+
+			// Identifier
+			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
+
+			// ")"
+			MoveNext(); // Skip
+
+			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
+		}
+
+		private void ParseOutput()
+		{
+			// "write"
+			DijkstraStep("write", PolishNotationTokenType.Operator);
 
 			// "("
 			MoveNext(); // Skip
@@ -144,6 +160,7 @@ namespace WebCompiler.Managers
 					{
 						ReversePolishNotation.Add(Stack.Pop());
 					}
+
 					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
 
 					break;

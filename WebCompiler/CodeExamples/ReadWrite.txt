@@ -1,0 +1,5 @@
+program @Main
+var @third
+read(@third)
+write(@third)
+endprogram
