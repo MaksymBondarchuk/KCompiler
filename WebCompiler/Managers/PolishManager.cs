@@ -30,10 +30,10 @@ namespace WebCompiler.Managers
 			{"equals", 1},
 			{"+", 3},
 			{"-", 3},
-			{"*", 3},
-			{"/", 3},
-			{"@+", 3},
-			{"@-", 3}
+			{"*", 4},
+			{"/", 4},
+			{"@+", 5},
+			{"@-", 5}
 		};
 
 		private Stack<PolishNotation> Stack { get; } = new Stack<PolishNotation>();
@@ -138,7 +138,16 @@ namespace WebCompiler.Managers
 		
 		private void ParseArithmeticExpression()
 		{
-			ParseSign();
+			do
+			{
+				// Any of the following can be in arithmetic expression
+				ParseSign();
+				ParseArithmeticLeaf();
+				ParseOperation();
+			} while (_outerLexemes.Lexemes[_i].Token != "delimiter"
+			         && _outerLexemes.Lexemes[_i].Token != "equals"
+			         && _outerLexemes.Lexemes[_i].Token != "greaterthn"
+			         && _outerLexemes.Lexemes[_i].Token != "lessthn");
 		}
 
 		private void ParseSign()
@@ -158,6 +167,17 @@ namespace WebCompiler.Managers
 				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Literal);
 			}
 		}
+		
+		private void ParseOperation()
+		{
+			if (_outerLexemes.Lexemes[_i].SubString.Equals("+") 
+			    || _outerLexemes.Lexemes[_i].SubString.Equals("-")
+			    || _outerLexemes.Lexemes[_i].SubString.Equals("*")
+			    || _outerLexemes.Lexemes[_i].SubString.Equals("/"))
+			{
+				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Operator);
+			}
+		}
 
 		#region Stack
 
@@ -171,6 +191,7 @@ namespace WebCompiler.Managers
 				case PolishNotationTokenType.Literal:
 					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
 					break;
+				// Операції звичайно потрапляють на вихід через магазин
 				case PolishNotationTokenType.Operator:
 					AddOperatorToStack(input);
 					break;

@@ -45,7 +45,7 @@ set				1
 equals			1
 + (binary)		3
 - (binary)		3
-*				3
-/				3
-+ (unary)		4   // @+
-- (unary)		4   // @-
+*				4
+/				4
++ (unary)		5   // @+
+- (unary)		5   // @-
