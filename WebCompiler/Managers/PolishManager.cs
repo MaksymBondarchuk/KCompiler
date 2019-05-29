@@ -77,9 +77,12 @@ namespace WebCompiler.Managers
 				case "var":
 					ParseDeclaration();
 					break;
-//                case "identifier":
-//                    return ParseAssign(lexemes);
+                case "identifier":
+                    ParseAssign();
+                    break;
 			}
+
+			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
 		private void ParseDeclaration()
@@ -87,7 +90,7 @@ namespace WebCompiler.Managers
 			// "var"
 			DijkstraStep("var", PolishNotationTokenType.Operator);
 
-			// Identifier
+			// <identifier>
 			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
 
 			// "set" (optional)
@@ -95,12 +98,23 @@ namespace WebCompiler.Managers
 			{
 				DijkstraStep("set", PolishNotationTokenType.Operator);
 
+				// <arithmetic expression>
 				ParseArithmeticExpression();
 			}
-
-			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
+		private void ParseAssign()
+		{
+			// <identifier>
+			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
+			
+			// "set"
+			DijkstraStep("set", PolishNotationTokenType.Operator);
+
+			// <arithmetic expression>
+			ParseArithmeticExpression();
+		}
+		
 		private void ParseInput()
 		{
 			// "read"

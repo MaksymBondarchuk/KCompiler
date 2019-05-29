@@ -8,7 +8,7 @@ namespace WebCompiler.Models
 
 		public override string ToString()
 		{
-			return $"{Token} - ({Type.ToString()})";
+			return $"{Token} ({Type.ToString()})";
 		}
 	}
 }
