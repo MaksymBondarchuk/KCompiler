@@ -13,6 +13,8 @@ namespace WebCompiler.Managers
 		private int _i;
 		private OuterLexemes _outerLexemes;
 
+		private int _labelNumber;
+
 		private readonly Dictionary<string, int> _operatorsPriorities = new Dictionary<string, int>
 		{
 			{"do", 1},
@@ -42,6 +44,7 @@ namespace WebCompiler.Managers
 		{
 			_i = 3; // skip program <program name> & delimiter
 			_outerLexemes = lexemes;
+			_labelNumber = 0;
 
 			ReversePolishNotation.Clear();
 			ParseStatementsList();
@@ -66,8 +69,9 @@ namespace WebCompiler.Managers
 			{
 //                case "do":
 //                    return ParseLoop(lexemes);
-//                case "if":
-//                    return ParseConditional(lexemes);
+                case "if":
+                    ParseConditional();
+                    break;
 				case "read":
 					ParseInput();
 					break;
@@ -206,6 +210,12 @@ namespace WebCompiler.Managers
 			}
 		}
 
+		private void ParseConditional()
+		{
+			// todo: ПЛВ
+			
+		}
+		
 		#region Stack
 
 		[SuppressMessage("ReSharper", "CommentTypo")]
