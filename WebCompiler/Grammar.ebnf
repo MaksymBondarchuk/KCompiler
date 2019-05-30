@@ -43,6 +43,8 @@ write			2
 var				2
 set				2
 equals			3
+greaterthn		3
+lessthn			3
 + (binary)		4
 - (binary)		4
 *				5

@@ -1,0 +1,12 @@
+program @Main
+var @first
+do while (@first lessthn 100 + 2 + (2 * 2))
+	if @first - 1 equals @first * 5
+    then
+        read( @first )
+        write( @first )
+    fi
+	read ( @first )
+	write ( @first )
+enddo
+endprogram

@@ -8,6 +8,9 @@ namespace WebCompiler.Models
 		Delimiter,
 		If,
 		Then,
-		Fi
+		Fi,
+		While,
+		TechnicalDo,	// <loop operator>         ::= do while (<logical expression>) TechnicalDo <operators list> enddo
+		Enddo
 	}
 }

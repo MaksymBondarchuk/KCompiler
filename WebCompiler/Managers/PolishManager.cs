@@ -15,7 +15,7 @@ namespace WebCompiler.Managers
 		private OuterLexemes _outerLexemes;
 
 		private int _labelNumber;
-		private List<string> _labels = new List<string>();
+		private readonly List<string> _labels = new List<string>();
 
 		private readonly Dictionary<string, int> _operatorsPriorities = new Dictionary<string, int>
 		{
@@ -32,6 +32,8 @@ namespace WebCompiler.Managers
 			{"var", 2},
 			{"set", 2},
 			{"equals", 3},
+			{"greaterthn", 3},
+			{"lessthn", 3},
 			{"+", 4},
 			{"-", 4},
 			{"*", 5},
@@ -70,8 +72,9 @@ namespace WebCompiler.Managers
 		{
 			switch (_outerLexemes.Lexemes[_i].Token)
 			{
-//                case "do":
-//                    return ParseLoop(lexemes);
+				case "do":
+					ParseLoop();
+					break;
 				case "if":
 					ParseConditional();
 					break;
@@ -248,7 +251,31 @@ namespace WebCompiler.Managers
 			}
 		}
 
-		#region Stack
+		private void ParseLoop()
+		{
+			// Skip "do"
+			MoveNext();
+
+			// "while"
+			DijkstraStep("while", PolishNotationTokenType.While);
+
+			// Skip "("
+			MoveNext();
+
+			// <logical expression>
+			ParseLogicalExpression();
+
+			// ")"
+			DijkstraStep(_outerLexemes.Lexemes[_i].Token, PolishNotationTokenType.TechnicalDo);
+
+			// <operators list>
+			ParseStatementsList();
+
+			// "enddo"
+			DijkstraStep("enddo", PolishNotationTokenType.Enddo);
+		}
+
+		#region Dijkstra
 
 		[SuppressMessage("ReSharper", "CommentTypo")]
 		private void DijkstraStep(string input, PolishNotationTokenType type)
@@ -268,7 +295,9 @@ namespace WebCompiler.Managers
 				// 		за ознакою кінця виразу (наприклад, ";").
 				case PolishNotationTokenType.Delimiter:
 				{
-					while (Stack.Count != 0 && !Stack.Peek().Token.StartsWith("if"))
+					while (Stack.Count != 0 &&
+					       !Stack.Peek().Token.StartsWith("if") &&
+					       !Stack.Peek().Token.StartsWith("while"))
 					{
 						ReversePolishNotation.Add(Stack.Pop());
 					}
@@ -294,7 +323,8 @@ namespace WebCompiler.Managers
 
 					string label = GenerateLabel();
 					head.Token = $"{head.Token} {label}";
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{label} УПХ", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = "УПХ", Type = type});
 				}
 					break;
 				// Символ кінця умовного оператора (наприклад, ; або end) виштовхує зі
@@ -312,7 +342,48 @@ namespace WebCompiler.Managers
 
 					head = Stack.Pop();
 					string label = head.Token.Split(" ").Last();
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}:", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = $":", Type = type});
+				}
+					break;
+				case PolishNotationTokenType.While:
+				{
+					string label = GenerateLabel();
+					Stack.Push(new PolishNotation {Token = $"{input} {label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = $":", Type = type});
+				}
+					break;
+				case PolishNotationTokenType.TechnicalDo:
+				{
+					PolishNotation head = Stack.Peek();
+					while (!head.Token.StartsWith("while"))
+					{
+						ReversePolishNotation.Add(Stack.Pop());
+						head = Stack.Peek();
+					}
+
+					string label = GenerateLabel();
+					head.Token = $"{head.Token} {label}";
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = "УПХ", Type = type});
+				}
+					break;
+				case PolishNotationTokenType.Enddo:
+				{
+					PolishNotation head = Stack.Peek();
+					while (!head.Token.StartsWith("while"))
+					{
+						ReversePolishNotation.Add(Stack.Pop());
+						head = Stack.Peek();
+					}
+
+					head = Stack.Pop();
+					string[] labels = head.Token.Split(" ");
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{labels[1]}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = "БП", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{labels.Last()}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation {Token = $":", Type = type});
 				}
 					break;
 				default:
@@ -346,7 +417,11 @@ namespace WebCompiler.Managers
 			}
 
 			PolishNotation head = Stack.Peek();
-			string headToken = head.Token.StartsWith("if") ? "if" : head.Token;
+			string headToken = head.Token.StartsWith("if")
+				? "if"
+				: head.Token.StartsWith("while")
+					? "while"
+					: head.Token;
 
 			// 2.	Якщо пріоритет операції, що знаходиться в стеку,
 			// 		не менший за пріоритет поточної вхідної операції,
@@ -372,6 +447,8 @@ namespace WebCompiler.Managers
 
 		#endregion
 
+		#region Auxilary
+
 		private void MoveNext()
 		{
 			_i++;
@@ -383,5 +460,7 @@ namespace WebCompiler.Managers
 			_labels.Add(label);
 			return label;
 		}
+
+		#endregion
 	}
 }
