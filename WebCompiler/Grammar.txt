@@ -36,16 +36,16 @@ enddo			1
 if				1
 then			1
 fi				1
-read			1
-write			1
-(				2
-)				2
-var				1
-set				1
-equals			1
-+ (binary)		3
-- (binary)		3
-*				4
-/				4
-+ (unary)		5   // @+
-- (unary)		5   // @-
+read			2
+write			2
+(				3
+)				3
+var				2
+set				2
+equals			3
++ (binary)		4
+- (binary)		4
+*				5
+/				5
++ (unary)		6   // @+
+- (unary)		6   // @-

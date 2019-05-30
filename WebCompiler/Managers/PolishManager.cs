@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using WebCompiler.Models;
 
 namespace WebCompiler.Managers
@@ -14,6 +15,7 @@ namespace WebCompiler.Managers
 		private OuterLexemes _outerLexemes;
 
 		private int _labelNumber;
+		private List<string> _labels = new List<string>();
 
 		private readonly Dictionary<string, int> _operatorsPriorities = new Dictionary<string, int>
 		{
@@ -23,19 +25,19 @@ namespace WebCompiler.Managers
 			{"if", 1},
 			{"then", 1},
 			{"fi", 1},
-			{"read", 1},
-			{"write", 1},
-			{"(", 2}, // todo: Review me
-			{")", 2}, // todo: Review me
-			{"var", 1},
-			{"set", 1},
-			{"equals", 1},
-			{"+", 3},
-			{"-", 3},
-			{"*", 4},
-			{"/", 4},
-			{"@+", 5},
-			{"@-", 5}
+			{"read", 2},
+			{"write", 2},
+			{"(", 3}, // todo: Review me
+			{")", 3}, // todo: Review me
+			{"var", 2},
+			{"set", 2},
+			{"equals", 3},
+			{"+", 4},
+			{"-", 4},
+			{"*", 5},
+			{"/", 5},
+			{"@+", 6},
+			{"@-", 6}
 		};
 
 		private Stack<PolishNotation> Stack { get; } = new Stack<PolishNotation>();
@@ -45,8 +47,9 @@ namespace WebCompiler.Managers
 			_i = 3; // skip program <program name> & delimiter
 			_outerLexemes = lexemes;
 			_labelNumber = 0;
-
+			_labels.Clear();
 			ReversePolishNotation.Clear();
+
 			ParseStatementsList();
 		}
 
@@ -69,9 +72,9 @@ namespace WebCompiler.Managers
 			{
 //                case "do":
 //                    return ParseLoop(lexemes);
-                case "if":
-                    ParseConditional();
-                    break;
+				case "if":
+					ParseConditional();
+					break;
 				case "read":
 					ParseInput();
 					break;
@@ -81,9 +84,9 @@ namespace WebCompiler.Managers
 				case "var":
 					ParseDeclaration();
 					break;
-                case "identifier":
-                    ParseAssign();
-                    break;
+				case "identifier":
+					ParseAssign();
+					break;
 			}
 
 			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
@@ -111,14 +114,14 @@ namespace WebCompiler.Managers
 		{
 			// <identifier>
 			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
-			
+
 			// "set"
 			DijkstraStep("set", PolishNotationTokenType.Operator);
 
 			// <arithmetic expression>
 			ParseArithmeticExpression();
 		}
-		
+
 		private void ParseInput()
 		{
 			// "read"
@@ -133,7 +136,7 @@ namespace WebCompiler.Managers
 			// ")"
 			MoveNext(); // Skip
 
-			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
+//			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
 		private void ParseOutput()
@@ -150,7 +153,7 @@ namespace WebCompiler.Managers
 			// ")"
 			MoveNext(); // Skip
 
-			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
+//			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
 		private void ParseArithmeticExpression()
@@ -212,10 +215,51 @@ namespace WebCompiler.Managers
 
 		private void ParseConditional()
 		{
-			// todo: ПЛВ
-			
+			// "if"
+			DijkstraStep("if", PolishNotationTokenType.If);
+
+			// <logical expression>
+			ParseLogicalExpression();
+
+			// "then"
+			DijkstraStep("then", PolishNotationTokenType.Then);
+			ParseDelimiterSilent();
+
+			// <operators list>
+			ParseStatementsList();
+
+			// "fi"
+			DijkstraStep("fi", PolishNotationTokenType.Fi);
 		}
-		
+
+		private void ParseLogicalExpression()
+		{
+			// <arithmetic expression>
+			ParseArithmeticExpression();
+
+			// "equals" or "greaterthn" or "lessthn"
+			DijkstraStep(_outerLexemes.Lexemes[_i].Token, PolishNotationTokenType.Operator);
+
+			// <arithmetic expression>
+			ParseArithmeticExpression();
+		}
+
+		private void ParseDelimiter()
+		{
+			if (!_outerLexemes.Lexemes[_i].Token.Equals("delimiter"))
+			{
+				DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
+			}
+		}
+
+		private void ParseDelimiterSilent()
+		{
+			if (!_outerLexemes.Lexemes[_i].Token.Equals("delimiter"))
+			{
+				MoveNext();
+			}
+		}
+
 		#region Stack
 
 		[SuppressMessage("ReSharper", "CommentTypo")]
@@ -233,14 +277,55 @@ namespace WebCompiler.Managers
 					AddOperatorToStack(input);
 					break;
 				// 4.	Якщо вхідний ланцюжок порожній, всі операції зі стека по черзі передаються на вихід
-				// 		за ознакою кінця виразу (наприклад, «;»).
+				// 		за ознакою кінця виразу (наприклад, ";").
 				case PolishNotationTokenType.Delimiter:
-					while (Stack.Count != 0)
+				{
+					while (Stack.Count != 0 && !Stack.Peek().Token.StartsWith("if"))
 					{
 						ReversePolishNotation.Add(Stack.Pop());
 					}
 
 					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
+				}
+					break;
+				case PolishNotationTokenType.If:
+					Stack.Push(new PolishNotation {Token = input, Type = type});
+					break;
+				// Символ then з пріоритетом 1 виштовхує зі стека всі знаки до першого
+				// if виключно. При цьому генерується нова мітка mi й у вихідний рядок
+				// заноситься mi УПХ. Потім мітка mi заноситься в таблицю міток і дописується у вершину стека,
+				// таким чином, запис if у вершині стека перетворюється на запис if mi
+				case PolishNotationTokenType.Then:
+				{
+					PolishNotation head = Stack.Peek();
+					while (!head.Token.StartsWith("if"))
+					{
+						ReversePolishNotation.Add(Stack.Pop());
+						head = Stack.Peek();
+					}
+
+					string label = GenerateLabel();
+					head.Token = $"{head.Token} {label}";
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{label} УПХ", Type = type});
+				}
+					break;
+				// Символ кінця умовного оператора (наприклад, ; або end) виштовхує зі
+				// стека все до найближчого if. Це може бути if mi mi+1 (або if mi у разі
+				// конструкції if <вираз> then <оператор>;). Запис видаляється зі стека,
+				// а у вихідний рядок додається mi+1: (або mi: у випадку неповного оператора умовного переходу).
+				case PolishNotationTokenType.Fi:
+				{
+					PolishNotation head = Stack.Peek();
+					while (!head.Token.StartsWith("if"))
+					{
+						ReversePolishNotation.Add(Stack.Pop());
+						head = Stack.Peek();
+					}
+
+					head = Stack.Pop();
+					string label = head.Token.Split(" ").Last();
+					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}:", Type = type});
+				}
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -273,11 +358,12 @@ namespace WebCompiler.Managers
 			}
 
 			PolishNotation head = Stack.Peek();
+			string headToken = head.Token.StartsWith("if") ? "if" : head.Token;
 
 			// 2.	Якщо пріоритет операції, що знаходиться в стеку,
 			// 		не менший за пріоритет поточної вхідної операції,
 			// 		то операція зі стека подається на вихід і п.2 повторюється,
-			if (_operatorsPriorities[head.Token] >= _operatorsPriorities[@operator])
+			if (_operatorsPriorities[headToken] >= _operatorsPriorities[@operator])
 			{
 				PolishNotation notation = Stack.Pop();
 				if (notation.Token != "(") // Причому "(" ніколи не передається на вихід
@@ -301,6 +387,13 @@ namespace WebCompiler.Managers
 		private void MoveNext()
 		{
 			_i++;
+		}
+
+		private string GenerateLabel()
+		{
+			string label = $"m{_labelNumber++}";
+			_labels.Add(label);
+			return label;
 		}
 	}
 }

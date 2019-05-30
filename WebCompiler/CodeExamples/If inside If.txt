@@ -1,0 +1,14 @@
+program @Main
+var @second set 2
+var @third
+if @third equals @second + 3
+then
+	if @third - 1 equals @second * 5
+	then
+		read(@third)
+		write(@second)
+	fi
+	write(@third)
+fi
+var @sum set 0
+endprogram

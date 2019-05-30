@@ -1,0 +1,10 @@
+program @Main
+var @second set 2
+var @third
+if @third - 7 * 3 equals @second + 3
+then
+read(@third)
+write(@second)
+fi
+var @sum set 0
+endprogram

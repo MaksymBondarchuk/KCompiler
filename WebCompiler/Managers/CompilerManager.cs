@@ -602,31 +602,31 @@ namespace WebCompiler.Managers
 				i++;
 			}
 
-			if (!lexemes[i].SubString.Equals("("))
-			{
-				SyntaxErr.Add(
-					new SyntaxError
-					{
-						Text = $"'(' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
-					});
-				return false;
-			}
-
-			i++;
+//			if (!lexemes[i].SubString.Equals("("))
+//			{
+//				SyntaxErr.Add(
+//					new SyntaxError
+//					{
+//						Text = $"'(' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
+//					});
+//				return false;
+//			}
+//
+//			i++;
 
 			if (!ParseLogicalExpression(lexemes, ref i)) return false;
 
-			if (!lexemes[i].SubString.Equals(")"))
-			{
-				SyntaxErr.Add(
-					new SyntaxError
-					{
-						Text = $"')' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
-					});
-				return false;
-			}
-
-			i++;
+//			if (!lexemes[i].SubString.Equals(")"))
+//			{
+//				SyntaxErr.Add(
+//					new SyntaxError
+//					{
+//						Text = $"')' expected in line {lexemes[i].LineNumber} instead seen {lexemes[i].SubString}"
+//					});
+//				return false;
+//			}
+//
+//			i++;
 
 			if (lexemes[i].Token.Equals("delimiter"))
 			{
@@ -902,7 +902,11 @@ namespace WebCompiler.Managers
 				bool isOperation = ParseOperation(lexemes, ref i);
 				if (isArithmeticLeaf && !isOperation)
 				{
-					if (lexemes[i].SubString.Equals(")") || lexemes[i].SubString.Equals("\n"))
+					if (lexemes[i].SubString.Equals(")")
+					    || lexemes[i].SubString.Equals("\n")
+					    || lexemes[i].SubString.Equals("equals")
+					    || lexemes[i].SubString.Equals("greaterthn")
+					    || lexemes[i].SubString.Equals("lessthn"))
 					{
 						return true;
 					}

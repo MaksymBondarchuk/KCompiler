@@ -5,6 +5,9 @@ namespace WebCompiler.Models
 		Identifier,
 		Literal,
 		Operator,
-		Delimiter
+		Delimiter,
+		If,
+		Then,
+		Fi
 	}
 }
