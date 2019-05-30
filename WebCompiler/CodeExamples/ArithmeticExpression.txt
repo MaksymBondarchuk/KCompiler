@@ -1,0 +1,6 @@
+program @Main
+var @third
+@third set (2 + (2 * 2)) + 7 * 19
+read(@third)
+write(@third)
+endprogram
