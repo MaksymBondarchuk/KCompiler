@@ -27,8 +27,8 @@ namespace WebCompiler.Managers
 			{"fi", 1},
 			{"read", 2},
 			{"write", 2},
-			{"(", 3}, // todo: Review me
-			{")", 3}, // todo: Review me
+			{"(", 3},
+			{")", 3},
 			{"var", 2},
 			{"set", 2},
 			{"equals", 3},
@@ -135,8 +135,6 @@ namespace WebCompiler.Managers
 
 			// ")"
 			MoveNext(); // Skip
-
-//			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
 		private void ParseOutput()
@@ -152,8 +150,6 @@ namespace WebCompiler.Managers
 
 			// ")"
 			MoveNext(); // Skip
-
-//			DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
 		}
 
 		private void ParseArithmeticExpression()
@@ -242,14 +238,6 @@ namespace WebCompiler.Managers
 
 			// <arithmetic expression>
 			ParseArithmeticExpression();
-		}
-
-		private void ParseDelimiter()
-		{
-			if (!_outerLexemes.Lexemes[_i].Token.Equals("delimiter"))
-			{
-				DijkstraStep("\\n", PolishNotationTokenType.Delimiter);
-			}
 		}
 
 		private void ParseDelimiterSilent()
