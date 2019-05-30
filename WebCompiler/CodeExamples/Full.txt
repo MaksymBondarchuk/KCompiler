@@ -2,7 +2,7 @@ program @Main
 var @first set 1
 var @second set -23.5 + 7
 var @third
-if (@third equals @second)
+if @third equals @second
 then
 read(@third)
 write(@second)

@@ -1,0 +1,7 @@
+program @Main
+var @first
+do while (@first lessthn 100 + 2 + (2 * 2))
+	read ( @first )
+	write ( @first )
+enddo
+endprogram
