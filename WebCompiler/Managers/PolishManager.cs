@@ -15,7 +15,9 @@ namespace WebCompiler.Managers
 		private OuterLexemes _outerLexemes;
 
 		private int _labelNumber;
-		private readonly List<string> _labels = new List<string>();
+		
+		// Name, Address
+		private readonly Dictionary<string, int> _labelAddresses = new Dictionary<string, int>();
 
 		private readonly Dictionary<string, int> _operatorsPriorities = new Dictionary<string, int>
 		{
@@ -49,7 +51,7 @@ namespace WebCompiler.Managers
 			_i = 3; // skip program <program name> & delimiter
 			_outerLexemes = lexemes;
 			_labelNumber = 0;
-			_labels.Clear();
+			_labelAddresses.Clear();
 			ReversePolishNotation.Clear();
 
 			ParseStatementsList();
@@ -57,7 +59,8 @@ namespace WebCompiler.Managers
 			return new PolishResult
 			{
 				ReversePolishNotation = ReversePolishNotation,
-				Trace = Trace
+				Trace = Trace,
+				LabelAddresses = _labelAddresses
 			};
 		}
 
@@ -463,7 +466,7 @@ namespace WebCompiler.Managers
 		private string GenerateLabel()
 		{
 			string label = $"m{_labelNumber++}";
-			_labels.Add(label);
+			_labelAddresses.Add(label, _i);
 			return label;
 		}
 

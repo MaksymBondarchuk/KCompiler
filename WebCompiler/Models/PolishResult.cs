@@ -6,5 +6,7 @@ namespace WebCompiler.Models
 	{
 		public List<PolishNotation> ReversePolishNotation { get; set; }
 		public List<PolishTrace> Trace { get; set; }
+
+		public Dictionary<string, int> LabelAddresses { get; set; }
 	}
 }
