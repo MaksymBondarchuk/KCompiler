@@ -8,8 +8,8 @@ namespace WebCompiler.Managers
 {
 	public class PolishManager : IPolishManager
 	{
-		public List<PolishNotation> ReversePolishNotation { get; } = new List<PolishNotation>();
-		public List<PolishTrace> Trace { get; } = new List<PolishTrace>();
+		private List<PolishNotation> ReversePolishNotation { get; } = new List<PolishNotation>();
+		private List<PolishTrace> Trace { get; } = new List<PolishTrace>();
 
 		private int _i;
 		private OuterLexemes _outerLexemes;
@@ -44,7 +44,7 @@ namespace WebCompiler.Managers
 
 		private Stack<PolishNotation> Stack { get; } = new Stack<PolishNotation>();
 
-		public void Run(OuterLexemes lexemes)
+		public PolishResult Run(OuterLexemes lexemes)
 		{
 			_i = 3; // skip program <program name> & delimiter
 			_outerLexemes = lexemes;
@@ -53,6 +53,12 @@ namespace WebCompiler.Managers
 			ReversePolishNotation.Clear();
 
 			ParseStatementsList();
+			
+			return new PolishResult
+			{
+				ReversePolishNotation = ReversePolishNotation,
+				Trace = Trace
+			};
 		}
 
 		private void ParseStatementsList()

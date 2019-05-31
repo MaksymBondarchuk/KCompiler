@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using WebCompiler.Managers;
@@ -46,18 +45,17 @@ namespace WebCompiler.Controllers
 				};
 			}
 
-			_polishManager.Run(lex);
-			List<PolishNotation> polishNotation = _polishManager.ReversePolishNotation;
-			List<PolishTrace> trace = _polishManager.Trace;
+			PolishResult polishResult = _polishManager.Run(lex);
 
 			return new Result
 			{
 				OuterLexemes = lex,
 				SyntaxResult = syn,
-				PolishResult = new PolishResult
+				// todo Use AutoMapper
+				PolishResult = new PolishResultDto
 				{
-					ReversePolishNotation = string.Join(" ", polishNotation.Select(pn => pn.Token)),
-					Trace = trace.Select(t => new PolishTraceDto
+					ReversePolishNotation = string.Join(" ", polishResult.ReversePolishNotation.Select(pn => pn.Token)),
+					Trace = polishResult.Trace.Select(t => new PolishTraceDto
 					{
 						Input = t.Input,
 						Stack = string.Join("\n", t.Stack.Select(pn => pn.Token)),

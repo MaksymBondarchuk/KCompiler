@@ -230,119 +230,119 @@ namespace WebCompiler.Managers
 			return String.Empty;
 		}
 
-		private List<LT> GrammarLexemes { get; } = new List<LT>
+		private List<Lt> GrammarLexemes { get; } = new List<Lt>
 		{
-			new LT()
+			new Lt()
 			{
 				Token = "program",
 				Lexemes = new string[] {"program"},
 			},
 
-			new LT()
+			new Lt()
 			{
 				Token = "endprogram",
 				Lexemes = new string[] {"endprogram"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "do",
 				Lexemes = new string[] {"do"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "while",
 				Lexemes = new string[] {"while"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "enddo",
 				Lexemes = new string[] {"enddo"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "if",
 				Lexemes = new string[] {"if"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "then",
 				Lexemes = new string[] {"then"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "fi",
 				Lexemes = new string[] {"fi"}
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "read",
 				Lexemes = new string[] {"read"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "write",
 				Lexemes = new string[] {"write"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "set",
 				Lexemes = new string[] {"set"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "var",
 				Lexemes = new string[] {"var"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "equals",
 				Lexemes = new string[] {"equals"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "greaterthn",
 				Lexemes = new string[] {"greaterthn"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "lessthn",
 				Lexemes = new string[] {"lessthn"},
 			},
 
-			new LT()
+			new Lt()
 			{
 				Token = "operation",
 				Lexemes = new string[] {"+", "-", "*", "/"},
 			},
 
-			new LT()
+			new Lt()
 			{
 				Token = "parentheses",
 				Lexemes = new string[] {"(", ")"},
 			},
 
-			new LT()
+			new Lt()
 			{
 				Token = "ws",
 				Lexemes = new string[] {"' '"},
 			},
 
-			new LT()
+			new Lt()
 			{
 				Token = "delimiter",
 				Lexemes = new string[] {"\n"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "identifier",
 				Lexemes = new string[] {"@r1", "@1r", "@var"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "integer",
 				Lexemes = new string[] {"2", "-12"},
 			},
-			new LT()
+			new Lt()
 			{
 				Token = "float",
 				Lexemes = new string[] {"2.0", "-12.12"},
