@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace WebCompiler.Models
@@ -8,6 +9,8 @@ namespace WebCompiler.Models
 		[DataMember] public OuterLexemes OuterLexemes { get; set; }
 		[DataMember] public SyntaxResult SyntaxResult { get; set; }
 		[DataMember] public PolishResultDto PolishResult { get; set; }
+		[DataMember] public Guid ReferenceNumber { get; set; }
+		[DataMember] public string Output { get; set; }
 	}
 
 	public class OuterLexemes

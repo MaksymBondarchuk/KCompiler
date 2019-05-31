@@ -1,4 +1,4 @@
-namespace WebCompiler.Exception
+namespace WebCompiler.Exceptions
 {
 	public class SyntaxException: System.Exception
 	{

@@ -1,0 +1,6 @@
+program @Main
+var @b
+@b set 3 + 6
+var @a set 2 + 2 * 2
+write(@a)
+endprogram

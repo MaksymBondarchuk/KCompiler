@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using WebCompiler.Managers;
@@ -17,11 +18,16 @@ namespace WebCompiler.Controllers
 	{
 		private readonly ICompilerManager _manager;
 		private readonly IPolishManager _polishManager;
+		private readonly IExecutionManager _executionManager;
 
-		public CompilerController(ICompilerManager manager, IPolishManager polishManager)
+		public CompilerController(
+			ICompilerManager manager,
+			IPolishManager polishManager,
+			IExecutionManager executionManager)
 		{
 			_manager = manager;
 			_polishManager = polishManager;
+			_executionManager = executionManager;
 		}
 
 		[HttpPost]
@@ -41,11 +47,13 @@ namespace WebCompiler.Controllers
 				return new Result
 				{
 					OuterLexemes = lex,
-					SyntaxResult = syn
+					SyntaxResult = syn,
+					ReferenceNumber = Guid.NewGuid()
 				};
 			}
 
 			PolishResult polishResult = _polishManager.Run(lex);
+			string output = _executionManager.Run(polishResult);
 
 			return new Result
 			{
@@ -61,7 +69,9 @@ namespace WebCompiler.Controllers
 						Stack = string.Join("\n", t.Stack.Select(pn => pn.Token)),
 						ReversePolishNotation = string.Join(" ", t.ReversePolishNotation.Select(pn => pn.Token))
 					})
-				}
+				},
+				ReferenceNumber = Guid.NewGuid(),
+				Output = output
 			};
 		}
 	}
