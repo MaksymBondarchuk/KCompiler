@@ -15,7 +15,7 @@ namespace WebCompiler.Managers
 		private OuterLexemes _outerLexemes;
 
 		private int _labelNumber;
-		
+
 		// Name, Address
 		private readonly Dictionary<string, int> _labelAddresses = new Dictionary<string, int>();
 
@@ -55,7 +55,7 @@ namespace WebCompiler.Managers
 			ReversePolishNotation.Clear();
 
 			ParseStatementsList();
-			
+
 			return new PolishResult
 			{
 				ReversePolishNotation = ReversePolishNotation,
@@ -110,7 +110,9 @@ namespace WebCompiler.Managers
 			DijkstraStep("var", PolishNotationTokenType.Operator);
 
 			// <identifier>
-			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
+			DijkstraStep(_outerLexemes.Lexemes[_i].SubString,
+				PolishNotationTokenType.Identifier,
+				_outerLexemes.Lexemes[_i].Token.Equals("set"));
 
 			// "set" (optional)
 			if (_outerLexemes.Lexemes[_i].Token.Equals("set"))
@@ -125,7 +127,7 @@ namespace WebCompiler.Managers
 		private void ParseAssign()
 		{
 			// <identifier>
-			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
+			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier, true);
 
 			// "set"
 			DijkstraStep("set", PolishNotationTokenType.Operator);
@@ -143,7 +145,7 @@ namespace WebCompiler.Managers
 			MoveNext(); // Skip
 
 			// Identifier
-			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
+			DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier, true);
 
 			// ")"
 			MoveNext(); // Skip
@@ -287,14 +289,17 @@ namespace WebCompiler.Managers
 		#region Dijkstra
 
 		[SuppressMessage("ReSharper", "CommentTypo")]
-		private void DijkstraStep(string input, PolishNotationTokenType type)
+		private void DijkstraStep(string input, PolishNotationTokenType type, bool isAssignmentToThisIdentifier = false)
 		{
 			switch (type)
 			{
 				// 1.	Ідентифікатори та константи проходять від входу прямо до виходу
 				case PolishNotationTokenType.Identifier:
 				case PolishNotationTokenType.Literal:
-					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
+					ReversePolishNotation.Add(new PolishNotation
+					{
+						Token = input, Type = type, IsAssignmentToThisIdentifier = isAssignmentToThisIdentifier
+					});
 					break;
 				// Операції звичайно потрапляють на вихід через магазин
 				case PolishNotationTokenType.Operator:

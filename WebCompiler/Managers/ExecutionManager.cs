@@ -28,9 +28,10 @@ namespace WebCompiler.Managers
 				switch (element.Type)
 				{
 					case PolishNotationTokenType.Identifier:
-						_stack.Push(_identifiersValues.ContainsKey(element.Token)
+						_stack.Push(_identifiersValues.ContainsKey(element.Token) &&
+						            !element.IsAssignmentToThisIdentifier
 							? _identifiersValues[element.Token].ToString(CultureInfo.InvariantCulture)
-							: element.Token);	// only for declaration or assignment
+							: element.Token); // only for declaration or assignment
 						break;
 					case PolishNotationTokenType.Literal:
 						_stack.Push(element.Token);
@@ -60,6 +61,7 @@ namespace WebCompiler.Managers
 								{
 									throw new RuntimeException($"{head} is not declared");
 								}
+
 								responseBuilder.AppendLine(head.ToString(CultureInfo.InvariantCulture));
 								break;
 						}
@@ -126,6 +128,7 @@ namespace WebCompiler.Managers
 					{
 						throw new RuntimeException("Division by 0");
 					}
+
 					result = operand2 / operand1;
 					break;
 				default:
@@ -144,6 +147,7 @@ namespace WebCompiler.Managers
 			{
 				throw new RuntimeException($"{identifier} is not declared");
 			}
+
 			_identifiersValues[identifier] = value;
 		}
 
@@ -154,6 +158,7 @@ namespace WebCompiler.Managers
 			{
 				throw new RuntimeException($"{identifier} is already declared");
 			}
+
 			_declaredIdentifiers.Add(identifier);
 		}
 

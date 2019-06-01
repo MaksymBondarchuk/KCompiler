@@ -5,6 +5,8 @@ namespace WebCompiler.Models
 		public string Token { get; set; }
 		
 		public PolishNotationTokenType Type { get; set; }
+		
+		public bool IsAssignmentToThisIdentifier { get; set; }
 
 		public override string ToString()
 		{

@@ -1,6 +1,7 @@
 program @Main
 var @b
 @b set 3 + 6
-var @a set 2 + 2 * 2
+var @a set 2 + 2 * -2
+@a set 72
 write(@a)
 endprogram
