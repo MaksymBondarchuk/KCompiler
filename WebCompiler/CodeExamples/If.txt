@@ -1,10 +1,10 @@
 program @Main
-var @second set 2
-var @third
-if @third - 7 * 3 equals @second + 3
+var @a set 2
+var @b set 3
+if @a + 1 equals @b + 0
 then
-	read(@third)
-	write(@second)
+	write(@b)
+	@b set @b + 1
 fi
 var @sum set 0
 endprogram

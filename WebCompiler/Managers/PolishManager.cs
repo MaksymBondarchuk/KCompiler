@@ -196,10 +196,13 @@ namespace WebCompiler.Managers
 		private void ParseArithmeticLeaf()
 		{
 			if (_outerLexemes.Lexemes[_i].Token.Equals("float")
-			    || _outerLexemes.Lexemes[_i].Token.Equals("integer")
-			    || _outerLexemes.Lexemes[_i].Token.Equals("identifier"))
+			    || _outerLexemes.Lexemes[_i].Token.Equals("integer"))
 			{
 				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Literal);
+			}
+			if (_outerLexemes.Lexemes[_i].Token.Equals("identifier"))
+			{
+				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
 			}
 		}
 
