@@ -200,6 +200,7 @@ namespace WebCompiler.Managers
 			{
 				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Literal);
 			}
+
 			if (_outerLexemes.Lexemes[_i].Token.Equals("identifier"))
 			{
 				DijkstraStep(_outerLexemes.Lexemes[_i].SubString, PolishNotationTokenType.Identifier);
@@ -340,7 +341,10 @@ namespace WebCompiler.Managers
 
 					string label = GenerateLabel();
 					head.Token = $"{head.Token} {label}";
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation
+					{
+						Token = $"{label}", Type = PolishNotationTokenType.Label
+					});
 					ReversePolishNotation.Add(new PolishNotation {Token = "УПХ", Type = type});
 				}
 					break;
@@ -359,16 +363,24 @@ namespace WebCompiler.Managers
 
 					head = Stack.Pop();
 					string label = head.Token.Split(" ").Last();
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
-					ReversePolishNotation.Add(new PolishNotation {Token = $":", Type = type});
+					ReversePolishNotation.Add(new PolishNotation
+					{
+						Token = $"{label}", Type = PolishNotationTokenType.Label
+					});
+					ReversePolishNotation.Add(new PolishNotation {Token = ":", Type = type});
+					_labelAddresses[label] = ReversePolishNotation.Count;
 				}
 					break;
 				case PolishNotationTokenType.While:
 				{
 					string label = GenerateLabel();
 					Stack.Push(new PolishNotation {Token = $"{input} {label}", Type = type});
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation
+					{
+						Token = $"{label}", Type = PolishNotationTokenType.Label
+					});
 					ReversePolishNotation.Add(new PolishNotation {Token = $":", Type = type});
+					_labelAddresses[label] = ReversePolishNotation.Count;
 				}
 					break;
 				case PolishNotationTokenType.TechnicalDo:
@@ -382,7 +394,10 @@ namespace WebCompiler.Managers
 
 					string label = GenerateLabel();
 					head.Token = $"{head.Token} {label}";
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{label}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation
+					{
+						Token = $"{label}", Type = PolishNotationTokenType.Label
+					});
 					ReversePolishNotation.Add(new PolishNotation {Token = "УПХ", Type = type});
 				}
 					break;
@@ -397,10 +412,17 @@ namespace WebCompiler.Managers
 
 					head = Stack.Pop();
 					string[] labels = head.Token.Split(" ");
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{labels[1]}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation
+					{
+						Token = $"{labels[1]}", Type = PolishNotationTokenType.Label
+					});
 					ReversePolishNotation.Add(new PolishNotation {Token = "БП", Type = type});
-					ReversePolishNotation.Add(new PolishNotation {Token = $"{labels.Last()}", Type = type});
+					ReversePolishNotation.Add(new PolishNotation
+					{
+						Token = $"{labels.Last()}", Type = PolishNotationTokenType.Label
+					});
 					ReversePolishNotation.Add(new PolishNotation {Token = $":", Type = type});
+					_labelAddresses[labels.Last()] = ReversePolishNotation.Count;
 				}
 					break;
 				default:

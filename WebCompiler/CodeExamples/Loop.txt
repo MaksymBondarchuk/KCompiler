@@ -1,7 +1,7 @@
 program @Main
-var @first
-do while (@first lessthn 100 + 2 + (2 * 2))
-	read ( @first )
-	write ( @first )
+var @a set 0
+do while (@a lessthn 3)
+	write ( @a )
+	@a set @a + @a
 enddo
 endprogram

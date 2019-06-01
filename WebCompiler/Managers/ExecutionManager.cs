@@ -64,8 +64,12 @@ namespace WebCompiler.Managers
 
 								responseBuilder.AppendLine(head.ToString(CultureInfo.InvariantCulture));
 								break;
+							case "equals":
+							case "greaterthn":
+							case "lessthn":
+								HandleConditional(element);
+								break;
 						}
-
 						break;
 					case PolishNotationTokenType.Delimiter:
 						break;
@@ -80,6 +84,23 @@ namespace WebCompiler.Managers
 					case PolishNotationTokenType.TechnicalDo:
 						break;
 					case PolishNotationTokenType.Enddo:
+						break;
+					case PolishNotationTokenType.Label:
+						PolishNotation nextElement = polishResult.ReversePolishNotation[i + 1];
+						switch (nextElement.Token)
+						{
+							case "УПХ":
+								bool operand = Convert.ToBoolean(_stack.Pop());
+								if (!operand)
+								{
+									i = polishResult.LabelAddresses[element.Token];
+									continue;
+								}
+								break;
+							case "БП":
+								i = polishResult.LabelAddresses[element.Token];
+								continue;
+						}
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();
@@ -160,6 +181,33 @@ namespace WebCompiler.Managers
 			}
 
 			_declaredIdentifiers.Add(identifier);
+		}
+
+		private void HandleConditional(PolishNotation element)
+		{
+			EnsureStackHeadNotIdentifier();
+			decimal operand1 = Convert.ToDecimal(_stack.Pop());
+			EnsureStackHeadNotIdentifier();
+			decimal operand2 = Convert.ToDecimal(_stack.Pop());
+			bool result;
+			
+			switch (element.Token)
+			{
+				case "equals":
+					result = decimal.Equals(operand2, operand1);
+					break;
+				case "greaterthn":
+					result = operand2 > operand1;
+					break;
+				case "lessthn":
+					result = operand2 < operand1;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(element.Token), element.Token,
+						"Unknown conditional operator");
+			}
+
+			_stack.Push(result.ToString());
 		}
 
 		private void EnsureStackHeadNotIdentifier()

@@ -11,6 +11,7 @@ namespace WebCompiler.Models
 		Fi,
 		While,
 		TechnicalDo,	// <loop operator>         ::= do while (<logical expression>) TechnicalDo <operators list> enddo
-		Enddo
+		Enddo,
+		Label
 	}
 }
