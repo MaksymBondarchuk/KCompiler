@@ -1,4 +1,8 @@
 program @Main
-var @third
-read(@third)
+var @a
+read(@a)
+write(@a)
+var @b
+read(@b)
+write(@b)
 endprogram

@@ -4,6 +4,6 @@ namespace WebCompiler.Managers
 {
 	public interface IExecutionManager
 	{
-		string Run(PolishResult polishResult);
+		ExecutionResult Run(PolishResult polishResult, ExecutionPoint executionPoint = default, decimal input = default);
 	}
 }

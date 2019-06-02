@@ -9,107 +9,149 @@ namespace WebCompiler.Managers
 {
 	public class ExecutionManager : IExecutionManager
 	{
-		private readonly Stack<string> _stack = new Stack<string>();
-		private readonly List<string> _declaredIdentifiers = new List<string>();
+		private Stack<string> _stack = new Stack<string>();
+		private List<string> _declaredIdentifiers = new List<string>();
 
-		private readonly Dictionary<string, decimal> _identifiersValues = new Dictionary<string, decimal>();
+		private Dictionary<string, decimal> _identifiersValues = new Dictionary<string, decimal>();
 
-		public string Run(PolishResult polishResult)
+		public ExecutionResult Run(
+			PolishResult polishResult,
+			ExecutionPoint executionPoint = default,
+			decimal input = default)
 		{
-			var responseBuilder = new StringBuilder();
+			var outputBuilder = new StringBuilder();
 
 			_stack.Clear();
-
+			_declaredIdentifiers.Clear();
+			_identifiersValues.Clear();
 			int i = 0;
-			while (i < polishResult.ReversePolishNotation.Count)
+
+			if (executionPoint != default)
 			{
-				PolishNotation element = polishResult.ReversePolishNotation[i];
+				_stack = executionPoint.Stack;
+				_declaredIdentifiers = executionPoint.DeclaredIdentifiers;
+				_identifiersValues = executionPoint.IdentifiersValues;
+				i = executionPoint.PolishNotationIndex;
 
-				switch (element.Type)
-				{
-					case PolishNotationTokenType.Identifier:
-						_stack.Push(_identifiersValues.ContainsKey(element.Token) &&
-						            !element.IsAssignmentToThisIdentifier
-							? _identifiersValues[element.Token].ToString(CultureInfo.InvariantCulture)
-							: element.Token); // only for declaration or assignment
-						break;
-					case PolishNotationTokenType.Literal:
-						_stack.Push(element.Token);
-						break;
-					case PolishNotationTokenType.Operator:
-						switch (element.Token)
-						{
-							case "@+":
-							case "@-":
-								HandleArithmeticUnary(element);
-								break;
-							case "+":
-							case "-":
-							case "*":
-							case "/":
-								HandleArithmeticBinary(element);
-								break;
-							case "var":
-								HandleVar();
-								break;
-							case "set":
-								HandleSet();
-								break;
-							case "write":
-								string head = _stack.Pop();
-								if (head.StartsWith("@"))
-								{
-									throw new RuntimeException($"{head} is not declared");
-								}
-
-								responseBuilder.AppendLine(head.ToString(CultureInfo.InvariantCulture));
-								break;
-							case "equals":
-							case "greaterthn":
-							case "lessthn":
-								HandleConditional(element);
-								break;
-						}
-						break;
-					case PolishNotationTokenType.Delimiter:
-						break;
-					case PolishNotationTokenType.If:
-						break;
-					case PolishNotationTokenType.Then:
-						break;
-					case PolishNotationTokenType.Fi:
-						break;
-					case PolishNotationTokenType.While:
-						break;
-					case PolishNotationTokenType.TechnicalDo:
-						break;
-					case PolishNotationTokenType.Enddo:
-						break;
-					case PolishNotationTokenType.Label:
-						PolishNotation nextElement = polishResult.ReversePolishNotation[i + 1];
-						switch (nextElement.Token)
-						{
-							case "УПХ":
-								bool operand = Convert.ToBoolean(_stack.Pop());
-								if (!operand)
-								{
-									i = polishResult.LabelAddresses[element.Token];
-									continue;
-								}
-								break;
-							case "БП":
-								i = polishResult.LabelAddresses[element.Token];
-								continue;
-						}
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-
-				i++;
+				_stack.Push(input.ToString(CultureInfo.InvariantCulture));
+				HandleSet();
 			}
 
-			return responseBuilder.ToString();
+			try
+			{
+				while (i < polishResult.ReversePolishNotation.Count)
+				{
+					PolishNotation element = polishResult.ReversePolishNotation[i];
+
+					switch (element.Type)
+					{
+						case PolishNotationTokenType.Identifier:
+							_stack.Push(_identifiersValues.ContainsKey(element.Token) &&
+							            !element.IsAssignmentToThisIdentifier
+								? _identifiersValues[element.Token].ToString(CultureInfo.InvariantCulture)
+								: element.Token); // only for declaration or assignment
+							break;
+						case PolishNotationTokenType.Literal:
+							_stack.Push(element.Token);
+							break;
+						case PolishNotationTokenType.Operator:
+							switch (element.Token)
+							{
+								case "@+":
+								case "@-":
+									HandleArithmeticUnary(element);
+									break;
+								case "+":
+								case "-":
+								case "*":
+								case "/":
+									HandleArithmeticBinary(element);
+									break;
+								case "var":
+									HandleVar();
+									break;
+								case "set":
+									HandleSet();
+									break;
+								case "write":
+									string head = _stack.Pop();
+									if (head.StartsWith("@"))
+									{
+										throw new RuntimeException($"{head} is not declared");
+									}
+
+									outputBuilder.AppendLine(head.ToString(CultureInfo.InvariantCulture));
+									break;
+								case "read":
+									return new ExecutionResult
+									{
+										Type = ExecutionResultType.InputRequired,
+										Output = outputBuilder.ToString(),
+										ExecutionPoint = new ExecutionPoint
+										{
+											PolishNotationIndex = i + 1,
+											Stack = _stack,
+											DeclaredIdentifiers = _declaredIdentifiers,
+											IdentifiersValues = _identifiersValues,
+											PolishResult = polishResult
+										}
+									};
+								case "equals":
+								case "greaterthn":
+								case "lessthn":
+									HandleConditional(element);
+									break;
+							}
+							break;
+						case PolishNotationTokenType.Delimiter:
+							break;
+						case PolishNotationTokenType.If:
+							break;
+						case PolishNotationTokenType.Then:
+							break;
+						case PolishNotationTokenType.Fi:
+							break;
+						case PolishNotationTokenType.While:
+							break;
+						case PolishNotationTokenType.TechnicalDo:
+							break;
+						case PolishNotationTokenType.Enddo:
+							break;
+						case PolishNotationTokenType.Label:
+							PolishNotation nextElement = polishResult.ReversePolishNotation[i + 1];
+							switch (nextElement.Token)
+							{
+								case "УПХ":
+									bool operand = Convert.ToBoolean(_stack.Pop());
+									if (!operand)
+									{
+										i = polishResult.LabelAddresses[element.Token];
+										continue;
+									}
+
+									break;
+								case "БП":
+									i = polishResult.LabelAddresses[element.Token];
+									continue;
+							}
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+
+					i++;
+				}
+			}
+			catch (RuntimeException e)
+			{
+				outputBuilder.AppendLine(e.Message);
+			}
+
+			return new ExecutionResult
+			{
+				Type = ExecutionResultType.Completed,
+				Output = outputBuilder.ToString()
+			};
 		}
 
 		private void HandleArithmeticUnary(PolishNotation element)
@@ -149,7 +191,6 @@ namespace WebCompiler.Managers
 					{
 						throw new RuntimeException("Division by 0");
 					}
-
 					result = operand2 / operand1;
 					break;
 				default:
@@ -190,7 +231,7 @@ namespace WebCompiler.Managers
 			EnsureStackHeadNotIdentifier();
 			decimal operand2 = Convert.ToDecimal(_stack.Pop());
 			bool result;
-			
+
 			switch (element.Token)
 			{
 				case "equals":

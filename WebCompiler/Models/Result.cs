@@ -10,7 +10,7 @@ namespace WebCompiler.Models
 		[DataMember] public SyntaxResult SyntaxResult { get; set; }
 		[DataMember] public PolishResultDto PolishResult { get; set; }
 		[DataMember] public Guid ReferenceNumber { get; set; }
-		[DataMember] public string Output { get; set; }
+//		[DataMember] public string Output { get; set; }
 	}
 
 	public class OuterLexemes

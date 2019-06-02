@@ -2,6 +2,6 @@ program @Main
 var @a set 0
 do while (@a lessthn 3)
 	write ( @a )
-	@a set @a + @a
+	@a set @a + 1
 enddo
 endprogram
