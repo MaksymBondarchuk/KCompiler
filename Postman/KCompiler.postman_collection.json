@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "b890053f-004a-41a5-94bf-bf6d452008f1",
+		"name": "KCompiler",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Compile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8a1d087e-530a-4e1d-9dd3-d71b03736a23",
+						"exec": [
+							"pm.test(\"Ensure Success Status Code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Ensure Compiled\", function () {",
+							"    pm.expect(jsonData.syntaxResult.success).to.eql(true);",
+							"});",
+							"",
+							"pm.environment.set(\"reference-number\", jsonData.referenceNumber);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"text\": \"program @Main\nvar @a\nread(@a)\nwrite(@a)\nvar @b\nread(@b)\nwrite(@b)\nendprogram\n\t\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/compiler",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"compiler"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Execute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8a1d087e-530a-4e1d-9dd3-d71b03736a23",
+						"exec": [
+							"pm.test(\"Ensure Success Status Code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/compiler/{{reference-number}}:execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"compiler",
+						"{{reference-number}}:execute"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Execute with Input",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8a1d087e-530a-4e1d-9dd3-d71b03736a23",
+						"exec": [
+							"pm.test(\"Ensure Success Status Code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/compiler/{{reference-number}}:execute?input=4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"compiler",
+						"{{reference-number}}:execute"
+					],
+					"query": [
+						{
+							"key": "input",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
