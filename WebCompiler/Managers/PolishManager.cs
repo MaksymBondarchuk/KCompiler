@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using WebCompiler.Extensions;
 using WebCompiler.Models;
 
 namespace WebCompiler.Managers
@@ -112,7 +113,7 @@ namespace WebCompiler.Managers
 			// <identifier>
 			DijkstraStep(_outerLexemes.Lexemes[_i].SubString,
 				PolishNotationTokenType.Identifier,
-				_outerLexemes.Lexemes[_i].Token.Equals("set"));
+				_outerLexemes.Lexemes[_i + 1].Token.Equals("set"));
 
 			// "set" (optional)
 			if (_outerLexemes.Lexemes[_i].Token.Equals("set"))
@@ -281,7 +282,7 @@ namespace WebCompiler.Managers
 			ParseLogicalExpression();
 
 			// ")"
-			DijkstraStep(_outerLexemes.Lexemes[_i].Token, PolishNotationTokenType.TechnicalDo);
+			DijkstraStep("\\n", PolishNotationTokenType.TechnicalDo);
 
 			// <operators list>
 			ParseStatementsList();
@@ -320,7 +321,7 @@ namespace WebCompiler.Managers
 						ReversePolishNotation.Add(Stack.Pop());
 					}
 
-					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
+//					ReversePolishNotation.Add(new PolishNotation {Token = input, Type = type});
 				}
 					break;
 				case PolishNotationTokenType.If:
@@ -432,7 +433,8 @@ namespace WebCompiler.Managers
 			Trace.Add(new PolishTrace
 			{
 				Input = input,
-				Stack = new Stack<PolishNotation>(Stack),
+//				Stack = new Stack<PolishNotation>(Stack),
+				Stack = Stack.Clone(),
 				ReversePolishNotation = new List<PolishNotation>(ReversePolishNotation)
 			});
 			MoveNext();

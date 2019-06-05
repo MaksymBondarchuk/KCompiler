@@ -73,7 +73,7 @@ namespace WebCompiler.Controllers
 					Trace = polishResult.Trace.Select(t => new PolishTraceDto
 					{
 						Input = t.Input,
-						Stack = string.Join("\n", t.Stack.Select(pn => pn.Token)),
+						Stack = string.Join(" | ", t.Stack.Select(pn => pn.Token)),
 						ReversePolishNotation = string.Join(" ", t.ReversePolishNotation.Select(pn => pn.Token))
 					})
 				},
